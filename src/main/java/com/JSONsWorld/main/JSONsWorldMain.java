@@ -32,7 +32,7 @@ public class JSONsWorldMain {
         String input = "say hello to John";
 
         StringEntity entity = new StringEntity("{"
-                + "\"model\": \"gpt-4o\","
+                + "\"model\": \"gpt-4o-mini\","
                 + "\"input\": \"" + input + "\"}");
         post.setEntity(entity);
 
