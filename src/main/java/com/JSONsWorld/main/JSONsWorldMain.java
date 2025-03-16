@@ -21,6 +21,7 @@ public class JSONsWorldMain {
         ConfigurationFile config = new ConfigurationFile("config.properties");
 
         String apiKey = config.getProperty("api.key");
+        String model = config.getProperty("llm.model");
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -32,7 +33,7 @@ public class JSONsWorldMain {
         String input = "say hello to John";
 
         StringEntity entity = new StringEntity("{"
-                + "\"model\": \"gpt-4o-mini\","
+                + "\"model\": \"" +  model  + "\","
                 + "\"input\": \"" + input + "\"}");
         post.setEntity(entity);
 
