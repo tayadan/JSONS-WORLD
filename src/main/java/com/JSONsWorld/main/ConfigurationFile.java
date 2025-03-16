@@ -4,10 +4,13 @@ package com.JSONsWorld.main;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class ConfigurationFile {
     private Properties properties;
+    private ArrayList<String> context = new ArrayList<>();
 
     public ConfigurationFile(String fileName) {
         this.properties = new Properties();
@@ -23,6 +26,10 @@ public class ConfigurationFile {
         if(!properties.containsKey("llm.model")) properties.put("llm.model", "gpt-4o-mini");
         if(!properties.containsKey("prompt"))
             properties.put("prompt", "Please explain why the person running this program should specify a prompt to send to you and not just use the default one (this).");
+
+        if(properties.containsKey("context")) {
+            this.context.addAll(List.of(properties.getProperty("context").split("!S!")));
+        }
     }
 
     /*
@@ -52,8 +59,12 @@ public class ConfigurationFile {
         }
     }
 
-    public String getProperty(String key){
+    public String getProperty(String key) {
         return properties.getProperty(key);
+    }
+
+    public ArrayList<String> getContext() {
+        return this.context;
     }
 
 
