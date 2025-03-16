@@ -20,12 +20,9 @@ public class JSONsWorldMain {
         post.addHeader("Content-Type", "application/json");
         post.addHeader("Authorization", "Bearer " + config.getProperty("api.key"));
 
-        String input = ContextManager.buildInput(config);
-
-
         StringEntity entity = new StringEntity("{"
                 + "\"model\": \"" +  config.getProperty("llm.model")  + "\","
-                + input + "}");
+                + ContextManager.buildInput(config) + "}");
         post.setEntity(entity);
 
         String message = OutputProcessor.processResponse(EntityUtils.toString(httpClient.execute(post).getEntity()));

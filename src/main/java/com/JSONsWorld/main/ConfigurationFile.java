@@ -25,8 +25,11 @@ public class ConfigurationFile {
         }
         if(!properties.containsKey("llm.model")) properties.put("llm.model", "gpt-4o-mini");
         if(!properties.containsKey("prompt"))
-            properties.put("prompt", "Please explain why the person running this program should specify a prompt to send to you and not just use the default one (this).");
+            properties.put("prompt", "Please explain why the person running this program should specify a " +
+                    "prompt to send to you and not just use the default one (this).");
 
+        // Sample context:
+        // context=This is a sample context.!S!Yes it is, I'm ChatGPT.
         if(properties.containsKey("context")) {
             this.context.addAll(List.of(properties.getProperty("context").split("!S!")));
         }
@@ -34,9 +37,10 @@ public class ConfigurationFile {
 
     /*
     Current properties:
-    1. api key
+    1. api.key
     2. prompt
     3. llm.model
+    4. context
 
     Future properties:
     1. language
