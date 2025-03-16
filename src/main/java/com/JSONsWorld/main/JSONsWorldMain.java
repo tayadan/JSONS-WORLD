@@ -2,6 +2,7 @@ package com.JSONsWorld.main;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -14,26 +15,30 @@ import java.io.IOException;
 public class JSONsWorldMain {
 
     public static void main(String[] args) throws IOException {
-        String apiKey = System.getenv("OpenAI_API_Key");
+        //String apiKey = System.getenv("OpenAI_API_Key");
+        //String apiKey = "";
 
-        CloseableHttpClient client = HttpClients.createDefault();
+        ConfigurationFile config = new ConfigurationFile("config.properties");
 
+        String apiKey = config.getProperty("api.key");
+        String model = config.getProperty("llm.model");
+
+        CloseableHttpClient httpClient = HttpClients.createDefault();
 
         HttpPost post = new HttpPost("https://api.openai.com/v1/responses");
         post.addHeader("Content-Type", "application/json");
-        post.addHeader("Authorization", "Bearer sk-gol4pk1m5BwUEtSTJeS568ktKVDNeTXmyJ66T3BlbkF");
-        post.addHeader("OpenAI-Organization".trim(), "org-gZ7peQP5XmIRVhs78U8WH");
-        post.setEntity(new StringEntity("{\"model\": \"GPT4o-mini\"," +
-                "\"input\":\"You are now a pirate. Explain http get and post requests to me\"}"));
+        post.addHeader("Authorization", "Bearer " + apiKey);
+        //post.addHeader("OpenAI-Organization", "");
+
+        String input = "say hello to John";
+
+        StringEntity entity = new StringEntity("{"
+                + "\"model\": \"" +  model  + "\","
+                + "\"input\": \"" + input + "\"}");
+        post.setEntity(entity);
 
 
-
-        /*client.execute(post,
-                response -> {
-                    System.out.println(EntityUtils.toString(response.getEntity()));
-                    return "";
-                }
-        );*/
-        InputProcessor.runTestDataset();
+        //System.out.println(httpClient.execute(post));
+        System.out.println(EntityUtils.toString(httpClient.execute(post).getEntity()));
     }
 }
