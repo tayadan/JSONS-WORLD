@@ -15,8 +15,12 @@ import java.io.IOException;
 public class JSONsWorldMain {
 
     public static void main(String[] args) throws IOException {
-        String apiKey = System.getenv("OpenAI_API_Key");
+        //String apiKey = System.getenv("OpenAI_API_Key");
         //String apiKey = "";
+
+        ConfigurationFile config = new ConfigurationFile("config.properties");
+
+        String apiKey = config.getProperty("api.key");
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
