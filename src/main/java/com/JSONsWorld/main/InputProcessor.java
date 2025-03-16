@@ -1,36 +1,25 @@
 package com.JSONsWorld.main;
 
+import com.google.gson.JsonParser;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.regex.Pattern;
+
 
 public class InputProcessor {
 
     public static String processResponse(String response) {
-        if(response.toLowerCase().startsWith("as an ai language model")) return "Error";
-        else if(response.contains("\n2.") || (response.contains("1.") && response.contains("2."))) {
-            System.out.println("Numbered list!");
-            return "";
+        // Yes, this is a lot, but it basically just navigates the JSON response and gets the part we actually care about.
+        response = JsonParser.parseString(response).getAsJsonObject().get("output")
+                .getAsJsonArray().get(0).getAsJsonObject().get("content").getAsJsonArray().get(0)
+                .getAsJsonObject().get("text").toString();
+
+        if(response.toLowerCase().contains("as an ai language model")) throw new RuntimeException("Denial of service.");
+        if(Pattern.compile("((\\\\n){1,3}\\d\\.)").matcher(response).results().count() > 2) {
+            response = response.replaceAll("\\\\n\\\\n", "\n").replaceAll("\\\\n", "\n");
         }
-        return "";
-    }
-
-    public static void runTestDataset() throws IOException {
-        File file = new File("C:\\Users\\sebas\\Documents\\Project 3\\SampleResponses.txt");
-
-        StringBuilder currentResponse = new StringBuilder();
-        for(String line : Files.readString(file.toPath()).split("\n")) {
-            if(line.startsWith("\"")) currentResponse = new StringBuilder(line);
-            else {
-                currentResponse.append(line.trim());
-                if(!line.trim().endsWith("\"")) currentResponse.append("\n");
-            }
-
-
-            if(line.trim().endsWith("\"")) {
-                System.out.println(currentResponse);
-                currentResponse = new StringBuilder();
-            }
-        }
+        return response;
     }
 }
