@@ -11,7 +11,6 @@ public class Vignette {
 
     //set of translated strings???
     //private String translated leftPose;???
-
     public Vignette(String leftPose, String combinedText, String leftText, String rightPose, String backgrounds) {
         this.leftPose = leftPose;
         this.combinedText = combinedText;
@@ -25,7 +24,8 @@ public class Vignette {
     public String getLeftText() { return leftText; }
     public String getRightPose() { return rightPose; }
     public String getBackgrounds() { return backgrounds; }
-    //setters for translated stuff???
+    //setters for translated stuff???, could be useful for extracting translated tsv?
+
 
     @Override
     public String toString() {
