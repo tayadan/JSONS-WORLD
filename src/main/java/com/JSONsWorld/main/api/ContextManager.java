@@ -1,4 +1,6 @@
-package com.JSONsWorld.main;
+package com.JSONsWorld.main.api;
+
+import com.JSONsWorld.main.ConfigurationFile;
 
 public class ContextManager {
 

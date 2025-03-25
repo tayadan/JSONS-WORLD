@@ -1,5 +1,7 @@
 package com.JSONsWorld.main;
 
+import com.JSONsWorld.main.api.ContextManager;
+import com.JSONsWorld.main.api.OutputProcessor;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;

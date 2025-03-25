@@ -1,4 +1,4 @@
-package com.JSONsWorld.main;
+package com.JSONsWorld.main.api;
 
 import com.google.gson.JsonNull;
 import com.google.gson.JsonParser;
