@@ -1,6 +1,13 @@
 package com.JSONsWorld.main;
 
+import com.JSONsWorld.main.api.ContextManager;
+import com.JSONsWorld.main.api.OutputProcessor;
 import com.JSONsWorld.main.vignettes.Vignette;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -16,7 +23,10 @@ public class TranslationProcessor {
     private static final String TSV_FILE = "pose_pairings_test.tsv";
     private static final String TRANSLATION_FILE = "english-spanish.tsv"; //idk which language yet
 
+    private static ConfigurationFile config;
+
     public static void main(String[] args) throws IOException {
+        TranslationProcessor.config = new ConfigurationFile(args.length == 0 ? "config.properties" : args[0]);
         List<Vignette> extracted = extractFromTSV();
         //print rows of data as test on how it looks like
         for (Vignette vignette : extracted) {
@@ -33,6 +43,12 @@ public class TranslationProcessor {
         ArrayList<String> lines = new ArrayList<>
                 (List.of(Files.readString(new File(TranslationProcessor.TSV_FILE).toPath()).trim().split("\n")));
         lines.removeFirst();
+
+        String translateMe = generateTranslationText(lines);
+        String translated = translate(config.getProperty("language"), translateMe);
+        translated = translated.replaceAll("\\\\t", "   ");
+
+        insertTranslatedText(lines, translated);
 
         // Filters the lines then adds them to the list
         lines.removeIf(line -> line.trim().isEmpty());
@@ -58,9 +74,52 @@ public class TranslationProcessor {
     //when using API call. make sure the prompt that mentions which language to use
     //is taken from config, new variable preferredlanguage. he mentioned something on that
     //so we are able to in theory make any sort of translated file with EN-preferredlanguage.tsv
-    private static String translate(String text) {
-        //gets the text and sends to API LLM call and translates.
-        return null; //returns the translated text
+    private static String translate(String language, String text) throws IOException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        HttpPost post = new HttpPost("https://api.openai.com/v1/chat/completions");
+        post.addHeader("Content-Type", "application/json");
+        post.addHeader("Authorization", "Bearer " + config.getProperty("api.key"));
+
+        StringEntity entity = new StringEntity("{"
+                + "\"model\": \"" +  config.getProperty("llm.model")  + "\","
+                + ContextManager.translateRequest(language, text) + "}");
+        post.setEntity(entity);
+
+        return OutputProcessor.processResponse(EntityUtils.toString(httpClient.execute(post).getEntity()));
+    }
+
+    private static String generateTranslationText(ArrayList<String> text) {
+        StringBuilder returnMe = new StringBuilder();
+        for(String line : text) {
+            String[] lineValues = line.split("\t");
+
+            if(lineValues.length >= 2) {
+                returnMe.append(lineValues[1]);
+                if(lineValues.length >= 3) returnMe.append("\t").append(lineValues[2]);
+            }
+            returnMe.append("\n");
+        }
+        return returnMe.toString().trim();
+    }
+
+    private static void insertTranslatedText(ArrayList<String> text, String translatedText) {
+        String[] splitTranslation = translatedText.split("\\\\n");
+
+        int pos = 0;
+        for(String line : text) {
+            String[] lineValues = line.split("\t");
+            String[] splitTranslatedLine = splitTranslation[pos].split("  ( )+");
+
+            if(lineValues.length >= 2) {
+                lineValues[1] = lineValues[1] + "   " + splitTranslatedLine[0];
+                if(splitTranslatedLine.length == 2) lineValues[2] = lineValues[2] + "   " + splitTranslatedLine[1];
+            }
+
+            text.set(pos, String.join("   ", lineValues));
+
+            pos++;
+        }
     }
 
 
