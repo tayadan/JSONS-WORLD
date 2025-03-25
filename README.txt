@@ -9,6 +9,9 @@ then sends a request with a given input prompt. The response is then printed to 
 OutputProcessor handles getting what ChatGPT returned.
 ContextManager handles building the prompt to send.
 
+SPRINT 2 OVERVIEW:
+We added in a systemn to parse TSV files and translate individual sections, then update the TSV with the translations and save to a file.
+
 PROJECT STRUCTURE:
 JSONsWorldMain.java: the main class that handles the HTTP request and processing the API's response.
 ConfigurationFile.java: class that reads configuration values from a config.properties file.
