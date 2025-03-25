@@ -5,11 +5,11 @@ package com.JSONsWorld.main.vignettes;
  * Makes it easier to extract stuff etc.
  */
 public class Vignette {
-    private String leftPose;
-    private String combinedText;
-    private String leftText;
-    private String rightPose;
-    private String backgrounds;
+    private String leftPose = "";
+    private String combinedText = "";
+    private String leftText = "";
+    private String rightPose = "";
+    private String backgrounds = "";
 
     // Set of translated strings???
     // Private String translated leftPose;???
