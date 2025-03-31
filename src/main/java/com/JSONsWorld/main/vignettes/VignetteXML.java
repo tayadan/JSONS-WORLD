@@ -32,16 +32,12 @@ public class VignetteXML {
         Element comic = document.createElement("comic");
         document.appendChild(comic);
 
-        Element figures = document.createElement("figures");
-        comic.appendChild(figures);
-        figures.appendChild(createFirstCharacter(document));
-        figures.appendChild(createSecondChild(document));
 
         Element scenes = document.createElement("scenes");
         comic.appendChild(scenes);
 
         for (Vignette vignette : manager.getVignettes()) {
-            scenes.appendChild(createScene(document, vignette));
+            scenes.appendChild(createPanel(document, vignette));
         }
 
         writeFile(document, fileName);
@@ -63,35 +59,50 @@ public class VignetteXML {
         }
     }
 
-    private Element createScene(Document document, Vignette vignette){
+    private Element createPanel(Document document, Vignette vignette){
+        Element panel = document.createElement("panel");
 
-        Element scene = document.createElement("scene");
+        //setting
+        Element setting = document.createElement("setting");
+        setting.appendChild(document.createTextNode(chooseRandom(vignette.getBackgrounds())));
+        panel.appendChild(setting);
 
-        Element leftpose = document.createElement("leftpose");
-        leftpose.appendChild(document.createTextNode(vignette.getLeftPose()));
-        scene.appendChild(leftpose);
+        //left character
+        Element left = document.createElement("left");
+        Element leftFigure = createFirstCharacter(document, vignette.getLeftPose());
+        left.appendChild(leftFigure);
 
-        Element rightpose = document.createElement("rightpose");
-        rightpose.appendChild(document.createTextNode(chooseRandom(vignette.getRightPose())));
-        scene.appendChild(rightpose);
 
-        if (!vignette.getLeftText().isEmpty()) {
-            Element leftText = document.createElement("left_text");
-            leftText.appendChild(document.createTextNode(chooseRandom(vignette.getLeftText())));
-            scene.appendChild(leftText);
+        //left text speech if we dont have right character and pose
+        if (vignette.getRightPose().isEmpty()) {
+            Element balloon = document.createElement("balloon");
+            balloon.setAttribute("status", "speech");
+            Element content = document.createElement("content");
+            content.appendChild(document.createTextNode(chooseRandom(vignette.getLeftText())));
+            balloon.appendChild(content);
+            left.appendChild(balloon);
         }
 
+        //combined text if we have both left and right poses
         if (!vignette.getCombinedText().isEmpty()) {
-            Element combinedText = document.createElement("combined_text");
-            combinedText.appendChild(document.createTextNode(chooseRandom(vignette.getCombinedText())));
-            scene.appendChild(combinedText);
+            Element balloon = document.createElement("balloon");
+            balloon.setAttribute("status", "speech");
+            Element content = document.createElement("content");
+            content.appendChild(document.createTextNode(chooseRandom(vignette.getCombinedText())));
+            balloon.appendChild(content);
+            left.appendChild(balloon);
+        }
+        panel.appendChild(left);
+
+        //right character if exists
+        if (!vignette.getRightPose().isEmpty()) {
+            Element right = document.createElement("right");
+            Element rightFigure = createSecondChild(document, (chooseRandom(vignette.getRightPose())));
+            right.appendChild(rightFigure);
+            panel.appendChild(right);
         }
 
-        Element background = document.createElement("background");
-        background.appendChild(document.createTextNode(chooseRandom(vignette.getBackgrounds())));
-        scene.appendChild(background);
-
-        return scene;
+        return panel;
     }
 
     private String chooseRandom(String data) {
@@ -103,15 +114,19 @@ public class VignetteXML {
         return options[randomIndex].trim();
     }
 
-    private Element createFirstCharacter(Document document){
+    private Element createFirstCharacter(Document document, String leftPose){
         Element figure = document.createElement("figure");
 
+        Element id = document.createElement("id");
+        id.appendChild(document.createTextNode("Jim"));
+        figure.appendChild(id);
+
         Element name = document.createElement("name");
-        name.appendChild(document.createTextNode(""));
+        name.appendChild(document.createTextNode("Jim"));
         figure.appendChild(name);
 
         Element appearance = document.createElement("appearance");
-        appearance.appendChild(document.createTextNode(""));
+        appearance.appendChild(document.createTextNode("male"));
         figure.appendChild(appearance);
 
         Element skin = document.createElement("skin");
@@ -139,25 +154,30 @@ public class VignetteXML {
         figure.appendChild(lips);
 
         Element pose = document.createElement("pose");
-        pose.appendChild(document.createTextNode(""));
+        pose.appendChild(document.createTextNode(leftPose));
         figure.appendChild(pose);
 
         Element facing = document.createElement("facing");
-        facing.appendChild(document.createTextNode(""));
+        facing.appendChild(document.createTextNode("right"));
         figure.appendChild(facing);
 
         return figure;
     }
 
-    private Element createSecondChild(Document document){
+    private Element createSecondChild(Document document, String rightPose){
         Element figure = document.createElement("figure");
 
+
+        Element id = document.createElement("id");
+        id.appendChild(document.createTextNode("Ana"));
+        figure.appendChild(id);
+
         Element name = document.createElement("name");
-        name.appendChild(document.createTextNode(""));
+        name.appendChild(document.createTextNode("Ana"));
         figure.appendChild(name);
 
         Element appearance = document.createElement("appearance");
-        appearance.appendChild(document.createTextNode(""));
+        appearance.appendChild(document.createTextNode("female"));
         figure.appendChild(appearance);
 
         Element skin = document.createElement("skin");
@@ -185,11 +205,11 @@ public class VignetteXML {
         figure.appendChild(lips);
 
         Element pose = document.createElement("pose");
-        pose.appendChild(document.createTextNode(""));
+        pose.appendChild(document.createTextNode(rightPose));
         figure.appendChild(pose);
 
         Element facing = document.createElement("facing");
-        facing.appendChild(document.createTextNode(""));
+        facing.appendChild(document.createTextNode("left"));
         figure.appendChild(facing);
 
         return figure;
