@@ -32,6 +32,7 @@ class VignetteXML {
         text_left.appendChild(document.createTextNode(leftText));
         left.appendChild(text_left);
 
+        // ------------------------------------------------------------
 
         Element right = document.createElement("right");
 
