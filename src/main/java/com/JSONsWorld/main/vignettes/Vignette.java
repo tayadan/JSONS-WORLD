@@ -20,15 +20,19 @@ public class Vignette {
         //sets all data, if combined or left is empty, the translated fields should be empty too
         String[] padded = new String[7]; //new list to adjust for empty values
         int j = 0;
-
-        for (int i = 0; i < info.length; i++) {
-            //check translated indexes
-            if ((i == 2 && info[1].isEmpty()) || (i == 4 && padded[3].isEmpty())) {
+        for (int i = 0; i < padded.length; i++) {
+            //check translated indexes?
+            if ((i == 2 && padded[1].isEmpty()) || (i == 4 && padded[3].isEmpty())) {
                 padded[i] = "";  //translated set to empty
                 continue;
             }
-
-            //assign otherwise empty
+            //missing right pose?
+            if (i == 5 && j >= info.length) {
+                padded[5] = "";
+                padded[6] = (j < info.length + 1) ? info[j] : "";
+                break;
+            }
+            //assign value
             padded[i] = (j < info.length) ? info[j] : "";
             j++;
         }
@@ -40,16 +44,6 @@ public class Vignette {
         translated_leftText = padded[4];
         rightPose = padded[5];
         backgrounds = padded[6];
-        //debug
-
-        System.out.println("Parsed Vignette:");
-        System.out.println("Left Pose: " + leftPose);
-        System.out.println("Combined Text: " + combinedText);
-        System.out.println("Translated Combined Text:" + translated_combinedText);
-        System.out.println("Left Text: " + leftText);
-        System.out.println("Translated Left Text:" + translated_leftText);
-        System.out.println("Right Pose: " + rightPose);
-        System.out.println("Backgrounds: " + backgrounds);
     }
 
     public String getLeftPose() { return leftPose; }
