@@ -32,6 +32,7 @@ Set up config.properties to contain:
 api.key={api_key}   #{api_key} being the API key
 llm.model=gpt-4o-mini
 prompt={Prompt}  #{Prompt} being the prompt you wish to run.
+language=preferred_language
 
 To run:
 mvn clean install
