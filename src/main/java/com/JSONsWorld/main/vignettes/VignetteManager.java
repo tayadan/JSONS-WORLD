@@ -10,4 +10,8 @@ public class VignetteManager {
     public VignetteManager(Vignette... frames) {
         panels = new ArrayList<>(Arrays.asList(frames));
     }
+
+    public void addVignette(Vignette vignette) { panels.add(vignette); }
+
+    public ArrayList<Vignette> getVignettes() { return panels; }
 }

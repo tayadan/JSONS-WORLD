@@ -3,6 +3,8 @@ package com.JSONsWorld.main;
 import com.JSONsWorld.main.api.ContextManager;
 import com.JSONsWorld.main.api.OutputProcessor;
 import com.JSONsWorld.main.vignettes.Vignette;
+import com.JSONsWorld.main.vignettes.VignetteManager;
+import com.JSONsWorld.main.vignettes.VignetteXML;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -33,6 +35,12 @@ public class TranslationProcessor {
             System.out.println(vignette);
         }
         buildTranslationFile(extracted); //english-spanish.tsv should be built!! in theory
+
+        VignetteManager manager = new VignetteManager();
+        manager.addVignette(extracted.getFirst());
+        manager.addVignette(extracted.get(1));
+        VignetteXML xmlGenerator = new VignetteXML();
+        xmlGenerator.createXML("test.xml", manager);
     }
 
 

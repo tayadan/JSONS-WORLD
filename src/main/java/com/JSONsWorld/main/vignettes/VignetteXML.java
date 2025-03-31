@@ -2,6 +2,8 @@ package com.JSONsWorld.main.vignettes;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import javax.print.Doc;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,7 +27,7 @@ public class VignetteXML {
 
 
     }
-    public void createXML(String fileName){
+    public void createXML(String fileName, VignetteManager manager){
         Document document = builder.newDocument();
         Element comic = document.createElement("comic");
         document.appendChild(comic);
@@ -38,8 +40,9 @@ public class VignetteXML {
         Element scenes = document.createElement("scenes");
         comic.appendChild(scenes);
 
-
-
+        for (Vignette vignette : manager.getVignettes()) {
+            scenes.appendChild(createScene(document, vignette));
+        }
 
         writeFile(document, fileName);
 
@@ -51,13 +54,49 @@ public class VignetteXML {
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(document);
             StreamResult result = new StreamResult(new File(fileName));
-
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.transform(source, result);
 
             System.out.println("XML file created.");
         } catch (TransformerException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Element createScene(Document document, Vignette vignette){
+
+        Element scene = document.createElement("scene");
+
+        Element leftpose = document.createElement("leftpose");
+        leftpose.appendChild(document.createTextNode(vignette.getLeftPose()));
+        scene.appendChild(leftpose);
+
+        Element rightpose = document.createElement("rightpose");
+        rightpose.appendChild(document.createTextNode(chooseRandom(vignette.getRightPose())));
+        scene.appendChild(rightpose);
+
+        Element leftText = document.createElement("left_text");
+        leftText.appendChild(document.createTextNode(chooseRandom(vignette.getLeftText())));
+        scene.appendChild(leftText);
+
+        Element combinedText = document.createElement("combined_text");
+        combinedText.appendChild(document.createTextNode(chooseRandom(vignette.getCombinedText())));
+        scene.appendChild(combinedText);
+
+        Element background = document.createElement("background");
+        background.appendChild(document.createTextNode(chooseRandom(vignette.getBackgrounds())));
+        scene.appendChild(background);
+
+        return scene;
+    }
+
+    private String chooseRandom(String data) {
+        if (data == null || data.trim().isEmpty()) {
+            return "";
+        }
+        String[] options = data.split(",");
+        int randomIndex = (int) (Math.random() * options.length);
+        return options[randomIndex].trim();
     }
 
     private Element createFirstCharacter(Document document){
