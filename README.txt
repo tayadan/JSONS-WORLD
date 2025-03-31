@@ -12,6 +12,9 @@ ContextManager handles building the prompt to send.
 SPRINT 2 OVERVIEW:
 We added in a systemn to parse TSV files and translate individual sections, then update the TSV with the translations and save to a file.
 
+SPRINT 3 OVERVIEW:
+Fixed key aspects of the Vignette layout. VignetteSchema, VignetteManager and VignetteXML. Basically just manages all the vignettes and builds appropriate XML file for the scenes. Translated aspects have been integrated aswell.
+
 PROJECT STRUCTURE:
 JSONsWorldMain.java: the main class that handles the HTTP request and processing the API's response.
 ConfigurationFile.java: class that reads configuration values from a config.properties file.
@@ -40,5 +43,5 @@ java -jar (Path to jar file)
 The path to the runnable jar is:
 target/JSONsWorld-1.0-SNAPSHOT-jar-with-dependencies.jar
 
-Blog URL: https://www.blogger.com/u/2/blog/posts/3738762055722151978?pli=1
+Blog URL: https://jsonsworld.blogspot.com/
 
