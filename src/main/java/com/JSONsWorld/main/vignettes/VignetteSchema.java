@@ -42,21 +42,13 @@ public class VignetteSchema extends VignetteXML {
             j++;
         }
 
-        String leftPose = padded[0];
-        String combinedText = padded[1];
-        String translated_combinedText = padded[2];
-        String leftText = padded[3];
-        String translated_leftText = padded[4];
-        String rightPose = padded[5];
-        String backgrounds = padded[6];
-
-        this.leftPose = info[0].trim();
-        this.combinedText = info[1].trim();
-        this.translated_combinedText = info[2].trim();
-        this.leftText = info[3].trim();
-        this.translated_leftText = info[4].trim();
-        this.rightPose = info[5].trim();
-        if(info.length == 7) this.backgrounds = info[6].trim();
+        this.leftPose = padded[0].trim();
+        this.combinedText = padded[1].trim();
+        this.translated_combinedText = padded[2].trim();
+        this.leftText = padded[3].trim();
+        this.translated_leftText = padded[4].trim();
+        this.rightPose = padded[5].trim();
+        if(info.length == 7) this.backgrounds = padded[6].trim();
     }
 
     public void buildXML(Document document) {

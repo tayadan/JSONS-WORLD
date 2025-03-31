@@ -26,7 +26,7 @@ public class VignetteManager {
     private ArrayList<VignetteSchema> panels = new ArrayList<>();
     protected Document managerDocument;
 
-    public VignetteManager(List<VignetteSchema> panels) throws ParserConfigurationException, IOException, SAXException {
+    public VignetteManager(List<VignetteSchema> panels) throws ParserConfigurationException {
         this.managerDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         this.panels.addAll(panels);
         panels.forEach(vignette -> vignette.buildXML(managerDocument));
@@ -48,15 +48,16 @@ public class VignetteManager {
     }
 
     private Document combine() throws ParserConfigurationException {
-
+        Element comic = managerDocument.createElement("comic");
         Element scenes = managerDocument.createElement("scenes");
-        managerDocument.appendChild(scenes);
-        int i = 0;
+
         for(VignetteSchema vignette : panels) {
-            System.out.println(i);
             scenes.appendChild(vignette.getElement());
-            i++;
         }
+
+        comic.appendChild(scenes);
+
+        managerDocument.appendChild(comic);
 
         return managerDocument;
     }

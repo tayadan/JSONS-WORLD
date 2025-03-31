@@ -16,23 +16,10 @@ import java.io.File;
  * Contains the scene info for 1 vignette
  */
 class VignetteXML {
-
-    private DocumentBuilder builder;
-    private Document document;
     private Element scene;
 
     // Combined isn't mentioned in the example xml. I'll just assume it's right
     protected void build(String image, String leftPose, String leftText, String rightPose, String rightText, Document document) {
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            builder = factory.newDocumentBuilder();
-        }
-        catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        }
-
-        this.document = document;
-
         Element sceneRoot = document.createElement("scene");
 
         Element left = document.createElement("left");
@@ -42,7 +29,7 @@ class VignetteXML {
         left.appendChild(pose_left);
 
         Element text_left = document.createElement("text");
-        text_left.appendChild(document.createTextNode(leftPose));
+        text_left.appendChild(document.createTextNode(leftText));
         left.appendChild(text_left);
 
 
