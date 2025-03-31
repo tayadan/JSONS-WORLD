@@ -17,11 +17,12 @@ import java.io.File;
  */
 class VignetteXML {
 
-    private final DocumentBuilder builder;
+    private DocumentBuilder builder;
     private Document document;
+    private Element scene;
 
     // Combined isn't mentioned in the example xml. I'll just assume it's right
-    public VignetteXML(String image, String leftPose, String leftText, String rightPose, String rightText) {
+    protected void build(String image, String leftPose, String leftText, String rightPose, String rightText, Document document) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             builder = factory.newDocumentBuilder();
@@ -30,48 +31,38 @@ class VignetteXML {
             throw new RuntimeException(e);
         }
 
-        this.document = builder.newDocument();
+        this.document = document;
+
         Element sceneRoot = document.createElement("scene");
+
         Element left = document.createElement("left");
-        left.setAttribute("pose", leftPose);
-        left.setAttribute("text", leftText);
+
+        Element pose_left = document.createElement("pose");
+        pose_left.appendChild(document.createTextNode(leftPose));
+        left.appendChild(pose_left);
+
+        Element text_left = document.createElement("text");
+        text_left.appendChild(document.createTextNode(leftPose));
+        left.appendChild(text_left);
+
 
         Element right = document.createElement("right");
-        right.setAttribute("pose", rightPose);
-        right.setAttribute("text", rightText);
+
+        Element pose_right = document.createElement("pose");
+        pose_right.appendChild(document.createTextNode(rightPose));
+        right.appendChild(pose_right);
+
+        Element text_right = document.createElement("text");
+        text_right.appendChild(document.createTextNode(rightText));
+        right.appendChild(text_right);
 
         sceneRoot.appendChild(left);
         sceneRoot.appendChild(right);
+
+        this.scene = sceneRoot;
     }
 
-    /**
-     * Creates the initial xml
-     */
-    private void initXML(){
-        Document document = builder.newDocument();
-        Element comic = document.createElement("comic");
-        document.appendChild(comic);
-
-
-        Element scenes = document.createElement("scenes");
-        comic.appendChild(scenes);
-
-    }
-
-    private void writeFile(Document document, String fileName) {
-        try{
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(document);
-            StreamResult result = new StreamResult(new File(fileName));
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.transform(source, result);
-
-            System.out.println("XML file created.");
-        } catch (TransformerException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    public Element getElement() {return scene;}
 
     private Element createPanel(Document document, VignetteSchema vignette){
         Element panel = document.createElement("panel");

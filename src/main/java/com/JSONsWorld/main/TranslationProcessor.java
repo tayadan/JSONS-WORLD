@@ -37,10 +37,8 @@ public class TranslationProcessor {
         }
         buildTranslationFile(extracted); //english-spanish.tsv should be built!! in theory
 
-        //VignetteManager manager = new VignetteManager();
-        for(int i = 0; i<extracted.size(); i++){
-            //manager.addVignette(extracted.get(i));
-        }
+        VignetteManager manager = new VignetteManager(extracted);
+        manager.write("Test.xml");
     }
 
 

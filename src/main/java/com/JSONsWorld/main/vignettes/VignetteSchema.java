@@ -1,5 +1,7 @@
 package com.JSONsWorld.main.vignettes;
 
+import org.w3c.dom.Document;
+
 /**
  * Vignette object class for storing each row.
  * Makes it easier to extract stuff etc.
@@ -48,7 +50,17 @@ public class VignetteSchema extends VignetteXML {
         String rightPose = padded[5];
         String backgrounds = padded[6];
 
-        super(backgrounds.split(", ")[(int) (Math.random() * backgrounds.split(", ").length)], leftPose, leftText, rightPose, combinedText);
+        this.leftPose = info[0].trim();
+        this.combinedText = info[1].trim();
+        this.translated_combinedText = info[2].trim();
+        this.leftText = info[3].trim();
+        this.translated_leftText = info[4].trim();
+        this.rightPose = info[5].trim();
+        if(info.length == 7) this.backgrounds = info[6].trim();
+    }
+
+    public void buildXML(Document document) {
+        super.build(backgrounds.split(", ")[(int) (Math.random() * backgrounds.split(", ").length)], leftPose, leftText, rightPose, combinedText, document);
     }
 
     public String getLeftPose() { return leftPose; }
