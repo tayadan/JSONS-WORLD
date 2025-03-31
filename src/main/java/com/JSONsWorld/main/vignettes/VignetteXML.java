@@ -75,13 +75,17 @@ public class VignetteXML {
         rightpose.appendChild(document.createTextNode(chooseRandom(vignette.getRightPose())));
         scene.appendChild(rightpose);
 
-        Element leftText = document.createElement("left_text");
-        leftText.appendChild(document.createTextNode(chooseRandom(vignette.getLeftText())));
-        scene.appendChild(leftText);
+        if (!vignette.getLeftText().isEmpty()) {
+            Element leftText = document.createElement("left_text");
+            leftText.appendChild(document.createTextNode(chooseRandom(vignette.getLeftText())));
+            scene.appendChild(leftText);
+        }
 
-        Element combinedText = document.createElement("combined_text");
-        combinedText.appendChild(document.createTextNode(chooseRandom(vignette.getCombinedText())));
-        scene.appendChild(combinedText);
+        if (!vignette.getCombinedText().isEmpty()) {
+            Element combinedText = document.createElement("combined_text");
+            combinedText.appendChild(document.createTextNode(chooseRandom(vignette.getCombinedText())));
+            scene.appendChild(combinedText);
+        }
 
         Element background = document.createElement("background");
         background.appendChild(document.createTextNode(chooseRandom(vignette.getBackgrounds())));

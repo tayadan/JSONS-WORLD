@@ -32,7 +32,7 @@ public class TranslationProcessor {
         List<Vignette> extracted = extractFromTSV();
         //print rows of data as test on how it looks like
         for (Vignette vignette : extracted) {
-            System.out.println(vignette);
+            //System.out.println(vignette.getCombinedText()); debug
         }
         buildTranslationFile(extracted); //english-spanish.tsv should be built!! in theory
 
@@ -60,7 +60,7 @@ public class TranslationProcessor {
 
         // Filters the lines then adds them to the list
         lines.removeIf(line -> line.trim().isEmpty());
-        lines.forEach(line -> data.add(new Vignette(line.split("\t"))));
+        lines.forEach(line -> data.add(new Vignette(line.split("   "))));
 
         return data; //return the list of objects
     }
