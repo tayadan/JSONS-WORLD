@@ -2,15 +2,16 @@ package com.JSONsWorld.main;
 
 import com.JSONsWorld.main.api.ContextManager;
 import com.JSONsWorld.main.api.OutputProcessor;
-import com.JSONsWorld.main.vignettes.Vignette;
+import com.JSONsWorld.main.vignettes.VignetteSchema;
 import com.JSONsWorld.main.vignettes.VignetteManager;
-import com.JSONsWorld.main.vignettes.VignetteXML;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -27,27 +28,25 @@ public class TranslationProcessor {
 
     private static ConfigurationFile config;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
         TranslationProcessor.config = new ConfigurationFile(args.length == 0 ? "config.properties" : args[0]);
-        List<Vignette> extracted = extractFromTSV();
+        List<VignetteSchema> extracted = extractFromTSV();
         //print rows of data as test on how it looks like
-        for (Vignette vignette : extracted) {
+        for (VignetteSchema vignette : extracted) {
             //System.out.println(vignette.getCombinedText()); debug
         }
         buildTranslationFile(extracted); //english-spanish.tsv should be built!! in theory
 
-        VignetteManager manager = new VignetteManager();
+        //VignetteManager manager = new VignetteManager();
         for(int i = 0; i<extracted.size(); i++){
-            manager.addVignette(extracted.get(i));
+            //manager.addVignette(extracted.get(i));
         }
-        VignetteXML xmlGenerator = new VignetteXML();
-        xmlGenerator.createXML("test.xml", manager);
     }
 
 
         //extracts tsv file and brings back list of vignette objects
-    private static List<Vignette> extractFromTSV() throws IOException {
-        List<Vignette> data = new ArrayList<>();
+    private static List<VignetteSchema> extractFromTSV() throws IOException {
+        List<VignetteSchema> data = new ArrayList<>();
 
         ArrayList<String> lines = new ArrayList<>
                 (List.of(Files.readString(new File(TranslationProcessor.TSV_FILE).toPath()).trim().split("\n")));
@@ -61,14 +60,14 @@ public class TranslationProcessor {
 
         // Filters the lines then adds them to the list
         lines.removeIf(line -> line.trim().isEmpty());
-        lines.forEach(line -> data.add(new Vignette(line.split("   "))));
+        lines.forEach(line -> data.add(new VignetteSchema(line.split("   "))));
 
         return data; //return the list of objects
     }
 
     //we need translation part which gets translations for each of these and then assigns them in the object??
     //and then placing this data in a separate file with both english and "spanish" translations
-    private static void buildTranslationFile(List<Vignette> vignettes) throws IOException {
+    private static void buildTranslationFile(List<VignetteSchema> vignettes) throws IOException {
         StringBuilder writeMe = new StringBuilder();
         vignettes.forEach(v -> writeMe.append(v.toString().trim()).append("\n"));
 

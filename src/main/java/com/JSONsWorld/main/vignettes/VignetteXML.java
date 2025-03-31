@@ -2,8 +2,8 @@ package com.JSONsWorld.main.vignettes;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
-import javax.print.Doc;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -12,11 +12,16 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 
-public class VignetteXML {
+/**
+ * Contains the scene info for 1 vignette
+ */
+class VignetteXML {
 
     private final DocumentBuilder builder;
+    private Document document;
 
-    public VignetteXML(){
+    // Combined isn't mentioned in the example xml. I'll just assume it's right
+    public VignetteXML(String image, String leftPose, String leftText, String rightPose, String rightText) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             builder = factory.newDocumentBuilder();
@@ -25,9 +30,24 @@ public class VignetteXML {
             throw new RuntimeException(e);
         }
 
+        this.document = builder.newDocument();
+        Element sceneRoot = document.createElement("scene");
+        Element left = document.createElement("left");
+        left.setAttribute("pose", leftPose);
+        left.setAttribute("text", leftText);
 
+        Element right = document.createElement("right");
+        right.setAttribute("pose", rightPose);
+        right.setAttribute("text", rightText);
+
+        sceneRoot.appendChild(left);
+        sceneRoot.appendChild(right);
     }
-    public void createXML(String fileName, VignetteManager manager){
+
+    /**
+     * Creates the initial xml
+     */
+    private void initXML(){
         Document document = builder.newDocument();
         Element comic = document.createElement("comic");
         document.appendChild(comic);
@@ -36,15 +56,9 @@ public class VignetteXML {
         Element scenes = document.createElement("scenes");
         comic.appendChild(scenes);
 
-        for (Vignette vignette : manager.getVignettes()) {
-            scenes.appendChild(createPanel(document, vignette));
-        }
-
-        writeFile(document, fileName);
-
     }
 
-    private void writeFile(Document document, String fileName){
+    private void writeFile(Document document, String fileName) {
         try{
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
@@ -59,7 +73,7 @@ public class VignetteXML {
         }
     }
 
-    private Element createPanel(Document document, Vignette vignette){
+    private Element createPanel(Document document, VignetteSchema vignette){
         Element panel = document.createElement("panel");
 
         //setting
@@ -114,6 +128,7 @@ public class VignetteXML {
         return options[randomIndex].trim();
     }
 
+    // Not sure this is necessary for this sprint...?
     private Element createFirstCharacter(Document document, String leftPose){
         Element figure = document.createElement("figure");
 

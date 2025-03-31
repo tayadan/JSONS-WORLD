@@ -4,19 +4,22 @@ package com.JSONsWorld.main.vignettes;
  * Vignette object class for storing each row.
  * Makes it easier to extract stuff etc.
  */
-public class Vignette {
+public class VignetteSchema extends VignetteXML {
     private String leftPose = "";
+    private String rightPose = "";
+
     private String combinedText = "";
     private String translated_combinedText = "";
+
     private String leftText = "";
     private String translated_leftText = "";
-    private String rightPose = "";
+
     private String backgrounds = "";
 
     // Set of translated strings???
     // Private String translated leftPose;???
     // leftPose, combinedText, leftText, rightPose, backgrounds
-    public Vignette(String... info) {
+    public VignetteSchema(String... info) {
         //sets all data, if combined or left is empty, the translated fields should be empty too
         String[] padded = new String[7]; //new list to adjust for empty values
         int j = 0;
@@ -37,19 +40,26 @@ public class Vignette {
             j++;
         }
 
-        leftPose = padded[0];
-        combinedText = padded[1];
-        translated_combinedText = padded[2];
-        leftText = padded[3];
-        translated_leftText = padded[4];
-        rightPose = padded[5];
-        backgrounds = padded[6];
+        String leftPose = padded[0];
+        String combinedText = padded[1];
+        String translated_combinedText = padded[2];
+        String leftText = padded[3];
+        String translated_leftText = padded[4];
+        String rightPose = padded[5];
+        String backgrounds = padded[6];
+
+        super(backgrounds.split(", ")[(int) (Math.random() * backgrounds.split(", ").length)], leftPose, leftText, rightPose, combinedText);
     }
 
     public String getLeftPose() { return leftPose; }
-    public String getCombinedText() { return combinedText; }
-    public String getLeftText() { return leftText; }
     public String getRightPose() { return rightPose; }
+
+    public String getCombinedText() { return combinedText; }
+    public String getTranslatedCombinedText() { return translated_combinedText; }
+
+    public String getLeftText() { return leftText; }
+    public String getTranslatedLeftText() { return translated_leftText; }
+
     public String getBackgrounds() { return backgrounds; }
     //setters for translated stuff???, could be useful for extracting translated tsv?
     // Not gonna do it now, but we should add the library lombok which can automatically add getters and setters. -Seb
