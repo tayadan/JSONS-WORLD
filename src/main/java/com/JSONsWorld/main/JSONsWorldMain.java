@@ -22,6 +22,6 @@ public class JSONsWorldMain {
 
         manager.translateVignettes();
 
-        manager.write("C:\\Users\\sebas\\IdeaProjects\\JSONS-WORLD\\translatedXML.xml");
+        manager.write("translatedXML.xml");
     }
 }

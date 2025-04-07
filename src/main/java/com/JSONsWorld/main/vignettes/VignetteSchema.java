@@ -1,24 +1,21 @@
 package com.JSONsWorld.main.vignettes;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
 /**
  * Contains the scene info for 1 vignette
  */
-class VignetteXML {
+class VignetteSchema {
     private Node scene;
 
     private ArrayList<TextAndTranslation> extractedText = new ArrayList<>();
 
-    protected VignetteXML(Node scene) {
+    protected VignetteSchema(Node scene) {
         this.scene = scene;
 
         NodeList list = scene.getChildNodes();
@@ -102,8 +99,8 @@ class VignetteXML {
     }
 
     private class TextAndTranslation {
-        private String original;
-        private String translation;
+        private String original = "";
+        private String translation = "";
 
         private TextAndTranslation(String original) {
             this.original = original;

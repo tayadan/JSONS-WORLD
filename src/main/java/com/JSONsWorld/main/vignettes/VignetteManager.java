@@ -1,16 +1,13 @@
 package com.JSONsWorld.main.vignettes;
 
-import com.JSONsWorld.main.ConfigurationFile;
 import com.JSONsWorld.main.TranslationProcessor;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -22,7 +19,7 @@ import java.util.*;
 
 public class VignetteManager {
 
-    private ArrayList<VignetteXML> panels = new ArrayList<>();
+    private ArrayList<VignetteSchema> panels = new ArrayList<>();
     protected Document document;
 
     /*public VignetteManager(List<VignetteSchema> panels) throws ParserConfigurationException {
@@ -41,7 +38,7 @@ public class VignetteManager {
         NodeList xmlPanels = document.getElementsByTagName("panel");
 
         for(int i = 0; i < xmlPanels.getLength(); i++) {
-            this.panels.add(new VignetteXML(xmlPanels.item(i)));
+            this.panels.add(new VignetteSchema(xmlPanels.item(i)));
         }
     }
 
@@ -67,7 +64,6 @@ public class VignetteManager {
         results.removeIf(r -> r.trim().isEmpty());
         Queue<String> resultsQueue = new LinkedList<>();
         results.forEach(r -> resultsQueue.add(r.trim()));
-
 
         panels.forEach(panel -> {
             String[] setTranslations = new String[panel.getExtractedCount()];
