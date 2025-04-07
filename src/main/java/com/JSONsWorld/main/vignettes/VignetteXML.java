@@ -3,209 +3,122 @@ package com.JSONsWorld.main.vignettes;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Contains the scene info for 1 vignette
  */
 class VignetteXML {
-    private Element scene;
+    private Node scene;
 
-    // Combined isn't mentioned in the example xml. I'll just assume it's right
-    protected void build(String image, String leftPose, String leftText, String rightPose, String rightText, Document document) {
-        Element sceneRoot = document.createElement("scene");
+    private ArrayList<TextAndTranslation> extractedText = new ArrayList<>();
 
-        Element left = document.createElement("left");
+    protected VignetteXML(Node scene) {
+        this.scene = scene;
 
-        Element pose_left = document.createElement("pose");
-        pose_left.appendChild(document.createTextNode(leftPose));
-        left.appendChild(pose_left);
+        NodeList list = scene.getChildNodes();
 
-        Element text_left = document.createElement("text");
-        text_left.appendChild(document.createTextNode(leftText));
-        left.appendChild(text_left);
+        Node childNode = null;
+        for(int i = 0; i < list.getLength(); i++) {
+            childNode = list.item(i);
 
-        // ------------------------------------------------------------
+            if(childNode.getNodeName().equalsIgnoreCase("left") ||
+                    childNode.getNodeName().equalsIgnoreCase("middle") ||
+                    childNode.getNodeName().equalsIgnoreCase("right"))
+            {
+                NodeList grandChildNodes = childNode.getChildNodes();
 
-        Element right = document.createElement("right");
+                for(int j = 0; j < grandChildNodes.getLength(); j++) {
+                    if(grandChildNodes.item(j).getNodeName().equalsIgnoreCase("balloon")) {
+                        extractedText.add(new TextAndTranslation(grandChildNodes.item(j).getFirstChild().getNextSibling().getTextContent()));
+                    }
+                }
+            }
 
-        Element pose_right = document.createElement("pose");
-        pose_right.appendChild(document.createTextNode(rightPose));
-        right.appendChild(pose_right);
-
-        Element text_right = document.createElement("text");
-        text_right.appendChild(document.createTextNode(rightText));
-        right.appendChild(text_right);
-
-        sceneRoot.appendChild(left);
-        sceneRoot.appendChild(right);
-
-        this.scene = sceneRoot;
+        }
     }
 
-    public Element getElement() {return scene;}
+    protected boolean hasTranslation() {
+        if(extractedText.isEmpty()) return false;
+        return !extractedText.getFirst().getOriginal().trim().isEmpty();
 
-    private Element createPanel(Document document, VignetteSchema vignette){
-        Element panel = document.createElement("panel");
-
-        //setting
-        Element setting = document.createElement("setting");
-        setting.appendChild(document.createTextNode(chooseRandom(vignette.getBackgrounds())));
-        panel.appendChild(setting);
-
-        //left character
-        Element left = document.createElement("left");
-        Element leftFigure = createFirstCharacter(document, vignette.getLeftPose());
-        left.appendChild(leftFigure);
-
-
-        //left text speech if we dont have right character and pose
-        if (vignette.getRightPose().isEmpty()) {
-            Element balloon = document.createElement("balloon");
-            balloon.setAttribute("status", "speech");
-            Element content = document.createElement("content");
-            content.appendChild(document.createTextNode(chooseRandom(vignette.getLeftText())));
-            balloon.appendChild(content);
-            left.appendChild(balloon);
-        }
-
-        //combined text if we have both left and right poses
-        if (!vignette.getCombinedText().isEmpty()) {
-            Element balloon = document.createElement("balloon");
-            balloon.setAttribute("status", "speech");
-            Element content = document.createElement("content");
-            content.appendChild(document.createTextNode(chooseRandom(vignette.getCombinedText())));
-            balloon.appendChild(content);
-            left.appendChild(balloon);
-        }
-        panel.appendChild(left);
-
-        //right character if exists
-        if (!vignette.getRightPose().isEmpty()) {
-            Element right = document.createElement("right");
-            Element rightFigure = createSecondChild(document, (chooseRandom(vignette.getRightPose())));
-            right.appendChild(rightFigure);
-            panel.appendChild(right);
-        }
-
-        return panel;
     }
 
-    private String chooseRandom(String data) {
-        if (data == null || data.trim().isEmpty()) {
-            return "";
+    protected String[] getOriginalText() {
+        String[] text = new String[extractedText.size()];
+        for(int i = 0; i < extractedText.size(); i++) {
+            text[i] = extractedText.get(i).original;
         }
-        String[] options = data.split(",");
-        int randomIndex = (int) (Math.random() * options.length);
-        return options[randomIndex].trim();
+        return text;
     }
 
-    // Not sure this is necessary for this sprint...?
-    private Element createFirstCharacter(Document document, String leftPose){
-        Element figure = document.createElement("figure");
-
-        Element id = document.createElement("id");
-        id.appendChild(document.createTextNode("Jim"));
-        figure.appendChild(id);
-
-        Element name = document.createElement("name");
-        name.appendChild(document.createTextNode("Jim"));
-        figure.appendChild(name);
-
-        Element appearance = document.createElement("appearance");
-        appearance.appendChild(document.createTextNode("male"));
-        figure.appendChild(appearance);
-
-        Element skin = document.createElement("skin");
-        skin.appendChild(document.createTextNode(""));
-        figure.appendChild(skin);
-
-        Element hair = document.createElement("hair");
-        hair.appendChild(document.createTextNode(""));
-        figure.appendChild(hair);
-
-        Element beard = document.createElement("beard");
-        beard.appendChild(document.createTextNode(""));
-        figure.appendChild(beard);
-
-        Element hairlength = document.createElement("hairlength");
-        hairlength.appendChild(document.createTextNode(""));
-        figure.appendChild(hairlength);
-
-        Element hairstyle = document.createElement("hairstyle");
-        hairstyle.appendChild(document.createTextNode(""));
-        figure.appendChild(hairstyle);
-
-        Element lips = document.createElement("lips");
-        lips.appendChild(document.createTextNode(""));
-        figure.appendChild(lips);
-
-        Element pose = document.createElement("pose");
-        pose.appendChild(document.createTextNode(leftPose));
-        figure.appendChild(pose);
-
-        Element facing = document.createElement("facing");
-        facing.appendChild(document.createTextNode("right"));
-        figure.appendChild(facing);
-
-        return figure;
+    protected String[] getTranslatedText() {
+        String[] text = new String[extractedText.size()];
+        for(int i = 0; i < extractedText.size(); i++) {
+            text[i] = extractedText.get(i).translation;
+        }
+        return text;
     }
 
-    private Element createSecondChild(Document document, String rightPose){
-        Element figure = document.createElement("figure");
+    protected int getExtractedCount() {
+        return extractedText.size();
+    }
+
+    protected void setTranslations(String... translations) {
+        Queue<String> translatedQueue = new LinkedList<>();
+        for(int i = 0; i < extractedText.size(); i++) {
+            extractedText.get(i).setTranslation(translations[i]);
+            translatedQueue.add(translations[i]);
+        }
 
 
-        Element id = document.createElement("id");
-        id.appendChild(document.createTextNode("Ana"));
-        figure.appendChild(id);
+        NodeList list = scene.getChildNodes();
 
-        Element name = document.createElement("name");
-        name.appendChild(document.createTextNode("Ana"));
-        figure.appendChild(name);
+        Node childNode = null;
+        for(int i = 0; i < list.getLength(); i++) {
+            childNode = list.item(i);
 
-        Element appearance = document.createElement("appearance");
-        appearance.appendChild(document.createTextNode("female"));
-        figure.appendChild(appearance);
+            if(childNode.getNodeName().equalsIgnoreCase("left") ||
+                    childNode.getNodeName().equalsIgnoreCase("middle") ||
+                    childNode.getNodeName().equalsIgnoreCase("right"))
+            {
+                NodeList grandChildNodes = childNode.getChildNodes();
 
-        Element skin = document.createElement("skin");
-        skin.appendChild(document.createTextNode(""));
-        figure.appendChild(skin);
+                for(int j = 0; j < grandChildNodes.getLength(); j++) {
+                    if(grandChildNodes.item(j).getNodeName().equalsIgnoreCase("balloon")) {
+                        Node t = scene.getOwnerDocument().createElement("translation");
+                        t.appendChild(scene.getOwnerDocument().createTextNode(translatedQueue.remove()));
+                        grandChildNodes.item(j).appendChild(t);
+                    }
+                }
+            }
 
-        Element hair = document.createElement("hair");
-        hair.appendChild(document.createTextNode(""));
-        figure.appendChild(hair);
+        }
+    }
 
-        Element beard = document.createElement("beard");
-        beard.appendChild(document.createTextNode(""));
-        figure.appendChild(beard);
+    private class TextAndTranslation {
+        private String original;
+        private String translation;
 
-        Element hairlength = document.createElement("hairlength");
-        hairlength.appendChild(document.createTextNode(""));
-        figure.appendChild(hairlength);
+        private TextAndTranslation(String original) {
+            this.original = original;
+        }
 
-        Element hairstyle = document.createElement("hairstyle");
-        hairstyle.appendChild(document.createTextNode(""));
-        figure.appendChild(hairstyle);
+        private String getOriginal() {
+            return this.original;
+        }
 
-        Element lips = document.createElement("lips");
-        lips.appendChild(document.createTextNode(""));
-        figure.appendChild(lips);
+        private void setTranslation(String translation) {
+            this.translation = translation;
+        }
 
-        Element pose = document.createElement("pose");
-        pose.appendChild(document.createTextNode(rightPose));
-        figure.appendChild(pose);
-
-        Element facing = document.createElement("facing");
-        facing.appendChild(document.createTextNode("left"));
-        figure.appendChild(facing);
-
-        return figure;
+        private String getTranslation() {
+            return translation;
+        }
     }
 }

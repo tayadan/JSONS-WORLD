@@ -1,8 +1,9 @@
 package com.JSONsWorld.main.vignettes;
 
+import com.JSONsWorld.main.ConfigurationFile;
+import com.JSONsWorld.main.TranslationProcessor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -17,52 +18,104 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class VignetteManager {
 
-    private ArrayList<VignetteSchema> panels = new ArrayList<>();
-    protected Document managerDocument;
+    private ArrayList<VignetteXML> panels = new ArrayList<>();
+    protected Document document;
 
-    public VignetteManager(List<VignetteSchema> panels) throws ParserConfigurationException {
-        this.managerDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+    /*public VignetteManager(List<VignetteSchema> panels) throws ParserConfigurationException {
+        this.document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         this.panels.addAll(panels);
-        panels.forEach(vignette -> vignette.buildXML(managerDocument));
+        panels.forEach(vignette -> vignette.buildXML(document));
+    }*/
+
+    public VignetteManager(File source) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+
+        // Parse the XML file
+        this.document = builder.parse(source);
+
+        NodeList xmlPanels = document.getElementsByTagName("panel");
+
+        for(int i = 0; i < xmlPanels.getLength(); i++) {
+            this.panels.add(new VignetteXML(xmlPanels.item(i)));
+        }
+    }
+
+    public void translateVignettes() throws IOException {
+        ArrayList<String[]> textToTranslate = new ArrayList<>();
+
+        panels.forEach(panel -> textToTranslate.add(panel.getOriginalText()));
+
+        textToTranslate.removeIf(text -> text.length == 0);
+
+        String[] formattedPanels = new String[textToTranslate.size()];
+        for (int i = 0; i < textToTranslate.size(); i++) {
+            formattedPanels[i] = String.join("\n", textToTranslate.get(i));
+        }
+
+        String toTranslate = String.join("\n-\n", formattedPanels);
+
+        String result = TranslationProcessor.translate("spanish", toTranslate);
+
+        result = result.replaceAll("\\\\n", "\n").replaceAll("-", "");
+
+        ArrayList<String> results = new ArrayList<>(Arrays.asList(result.split("\n")));
+        results.removeIf(r -> r.trim().isEmpty());
+        Queue<String> resultsQueue = new LinkedList<>();
+        results.forEach(r -> resultsQueue.add(r.trim()));
+
+
+        panels.forEach(panel -> {
+            String[] setTranslations = new String[panel.getExtractedCount()];
+            for(int i = 0; i < panel.getExtractedCount(); i++) {
+                setTranslations[i] = resultsQueue.remove();
+            }
+            panel.setTranslations(setTranslations);
+        });
     }
 
     public void write(String fileName) {
         try{
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(combine());
+            DOMSource source = new DOMSource(this.document);
             StreamResult result = new StreamResult(new File(fileName));
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.transform(source, result);
 
             System.out.println("XML file created.");
-        } catch (TransformerException | ParserConfigurationException e) {
+        } catch (TransformerException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Document combine() throws ParserConfigurationException {
-        Element comic = managerDocument.createElement("comic");
-        Element scenes = managerDocument.createElement("scenes");
+    /*private Document combine() throws ParserConfigurationException {
+        Element comic = document.createElement("comic");
+        Element scenes = document.createElement("scenes");
 
-        for(VignetteSchema vignette : panels) {
+        for(VignetteXML vignette : panels) {
             scenes.appendChild(vignette.getElement());
         }
 
         comic.appendChild(scenes);
 
-        managerDocument.appendChild(comic);
+        document.appendChild(comic);
 
-        return managerDocument;
+        return document;
+    }
+
+    private String getTranslationText() {
+        StringBuilder translationText = new StringBuilder();
+        panels.forEach(panel -> translationText.append(panel.getLeftText())
+                .append("\n").append(panel.getCombinedText()).append("\n"));
+
+        return translationText.toString().trim();
     }
 
     public void addVignette(VignetteSchema vignette) { panels.add(vignette); }
 
-    public ArrayList<VignetteSchema> getVignettes() { return panels; }
+    public ArrayList<VignetteSchema> getVignettes() { return panels; }*/
 }

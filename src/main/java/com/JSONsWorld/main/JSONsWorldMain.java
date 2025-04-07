@@ -2,32 +2,26 @@ package com.JSONsWorld.main;
 
 import com.JSONsWorld.main.api.ContextManager;
 import com.JSONsWorld.main.api.OutputProcessor;
+import com.JSONsWorld.main.vignettes.VignetteManager;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
 import java.io.IOException;
 
 public class JSONsWorldMain {
 
-    public static void main(String[] args) throws IOException {
-        // Allows you to specify a custom path for the properties file.
-        ConfigurationFile config = new ConfigurationFile(args.length == 0 ? "config.properties" : args[0]);
+    public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
+        TranslationProcessor.config = new ConfigurationFile(args[0]);
+        VignetteManager manager = new VignetteManager(new File("specification.xml"));
 
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        manager.translateVignettes();
 
-        HttpPost post = new HttpPost("https://api.openai.com/v1/chat/completions");
-        post.addHeader("Content-Type", "application/json");
-        post.addHeader("Authorization", "Bearer " + config.getProperty("api.key"));
-
-        StringEntity entity = new StringEntity("{"
-                + "\"model\": \"" +  config.getProperty("llm.model")  + "\","
-                + ContextManager.buildInput(config) + "}");
-        post.setEntity(entity);
-
-        String message = OutputProcessor.processResponse(EntityUtils.toString(httpClient.execute(post).getEntity()));
-        System.out.println(message);
+        manager.write("C:\\Users\\sebas\\IdeaProjects\\JSONS-WORLD\\translatedXML.xml");
     }
 }
