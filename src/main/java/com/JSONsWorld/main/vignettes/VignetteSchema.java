@@ -11,14 +11,14 @@ import java.util.Queue;
  * Contains the scene info for 1 vignette
  */
 class VignetteSchema {
-    private Node scene;
+    private Node panel;
 
     private ArrayList<TextAndTranslation> extractedText = new ArrayList<>();
 
-    protected VignetteSchema(Node scene) {
-        this.scene = scene;
+    protected VignetteSchema(Node panel) {
+        this.panel = panel;
 
-        NodeList list = scene.getChildNodes();
+        NodeList list = panel.getChildNodes();
 
         Node childNode = null;
         for(int i = 0; i < list.getLength(); i++) {
@@ -40,32 +40,6 @@ class VignetteSchema {
         }
     }
 
-    protected boolean hasTranslation() {
-        if(extractedText.isEmpty()) return false;
-        return !extractedText.getFirst().getOriginal().trim().isEmpty();
-
-    }
-
-    protected String[] getOriginalText() {
-        String[] text = new String[extractedText.size()];
-        for(int i = 0; i < extractedText.size(); i++) {
-            text[i] = extractedText.get(i).original;
-        }
-        return text;
-    }
-
-    protected String[] getTranslatedText() {
-        String[] text = new String[extractedText.size()];
-        for(int i = 0; i < extractedText.size(); i++) {
-            text[i] = extractedText.get(i).translation;
-        }
-        return text;
-    }
-
-    protected int getExtractedCount() {
-        return extractedText.size();
-    }
-
     protected void setTranslations(String... translations) {
         Queue<String> translatedQueue = new LinkedList<>();
         for(int i = 0; i < extractedText.size(); i++) {
@@ -74,7 +48,7 @@ class VignetteSchema {
         }
 
 
-        NodeList list = scene.getChildNodes();
+        NodeList list = panel.getChildNodes();
 
         Node childNode = null;
         for(int i = 0; i < list.getLength(); i++) {
@@ -88,14 +62,40 @@ class VignetteSchema {
 
                 for(int j = 0; j < grandChildNodes.getLength(); j++) {
                     if(grandChildNodes.item(j).getNodeName().equalsIgnoreCase("balloon")) {
-                        Node t = scene.getOwnerDocument().createElement("translation");
-                        t.appendChild(scene.getOwnerDocument().createTextNode(translatedQueue.remove()));
+                        Node t = panel.getOwnerDocument().createElement("translation");
+                        t.appendChild(panel.getOwnerDocument().createTextNode(translatedQueue.remove()));
                         grandChildNodes.item(j).appendChild(t);
                     }
                 }
             }
 
         }
+    }
+
+    public boolean hasTranslation() {
+        if(extractedText.isEmpty()) return false;
+        return !extractedText.getFirst().getOriginal().trim().isEmpty();
+
+    }
+
+    public String[] getOriginalText() {
+        String[] text = new String[extractedText.size()];
+        for(int i = 0; i < extractedText.size(); i++) {
+            text[i] = extractedText.get(i).original;
+        }
+        return text;
+    }
+
+    public String[] getTranslatedText() {
+        String[] text = new String[extractedText.size()];
+        for(int i = 0; i < extractedText.size(); i++) {
+            text[i] = extractedText.get(i).translation;
+        }
+        return text;
+    }
+
+    protected int getExtractedCount() {
+        return extractedText.size();
     }
 
     private class TextAndTranslation {

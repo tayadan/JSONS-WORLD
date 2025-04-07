@@ -20,7 +20,7 @@ public class JSONsWorldMain {
         TranslationProcessor.config = new ConfigurationFile(args[0]);
         VignetteManager manager = new VignetteManager(new File("specification.xml"));
 
-        manager.translateVignettes();
+        manager.translateVignettes(TranslationProcessor.config.getProperty("language"));
 
         manager.write("translatedXML.xml");
     }
