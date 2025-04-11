@@ -6,7 +6,7 @@
 
     <groupId>org.example</groupId>
     <artifactId>JSONsWorld</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>Sprint4</version>
 
     <properties>
         <maven.compiler.source>23</maven.compiler.source>

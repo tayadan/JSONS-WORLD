@@ -14,6 +14,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.JSONsWorld.main.StoryManager.generateDialogue;
@@ -29,9 +30,9 @@ public class JSONsWorldMain {
         //manager.write("translatedXML.xml");
 
         //sample data
-        List<String> backgrounds = List.of("restaurant exterior", "restaurant interior", "kitchen", "dining table, school, classroom, hallway, desert, beach");
-        List<String> poses = List.of("walking", "crawling", "sitting", "eating", "standing", "serving", "laughing", "mirage waitress, running, studying, reading, writing");
-        List<String> characters = List.of("Anna", "Bob");
+        ArrayList<String> backgrounds = new ArrayList<>(List.of("restaurant exterior", "restaurant interior", "kitchen", "dining table, school, classroom, hallway, desert, beach"));
+        ArrayList<String> poses = new ArrayList<>(List.of("walking", "crawling", "sitting", "eating", "standing", "serving", "laughing", "mirage waitress, running, studying, reading, writing"));
+        ArrayList<String> characters = new ArrayList<>(List.of("Anna", "Bob"));
 
         //panel descriptions
         List<String> panelDescriptions = generatePanelDescriptions(backgrounds, poses, characters);

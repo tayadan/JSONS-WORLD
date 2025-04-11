@@ -15,23 +15,6 @@ import java.util.List;
 
 public class StoryManager {
 
-
-
-    private static String sendPrompt(String prompt) throws IOException {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-
-        HttpPost post = new HttpPost("https://api.openai.com/v1/chat/completions");
-        post.addHeader("Content-Type", "application/json");
-        post.addHeader("Authorization", "Bearer " + TranslationProcessor.config.getProperty("api.key"));
-
-        StringEntity entity = new StringEntity("{"
-                + "\"model\": \"" + TranslationProcessor.config.getProperty("llm.model") + "\","
-                + prompt + "}");
-        post.setEntity(entity);
-
-        return OutputProcessor.processResponse(EntityUtils.toString(httpClient.execute(post).getEntity()));
-    }
-
     public static List<String> generatePanelDescriptions(List<String> backgrounds, List<String> poses, List<String> characters) throws IOException {
 
         String descriptionPrompt = buildDescriptionPrompt(backgrounds, poses, characters);
@@ -98,8 +81,12 @@ public class StoryManager {
     public static String buildDialoguePrompt(List<String> panelDescriptions, String targetLanguage) {
         StringBuilder prompt = new StringBuilder();
 
-        prompt.append("Based on the following panel descriptions, please write simple, short dialogue for the characters in each panel. ");
-        prompt.append("The dialogue should match the actions and scenes described.\n\n");
+        String promptBeginning = """
+                Based on the following panel descriptions, please write simple, short dialogue for the characters in each panel. The dialogue should match the actions and scenes described.
+                
+                """;
+
+        prompt.append(promptBeginning);
 
         //descriptions from llm response from previous prompt
         prompt.append("Panel descriptions:\n");
@@ -107,24 +94,43 @@ public class StoryManager {
             prompt.append((i + 1)).append(". ").append(panelDescriptions.get(i)).append("\n");
         }
 
-        prompt.append("Write 1 or 2 lines of dialogue per panel, spoken by the characters mentioned.\n");
-        prompt.append("Keep the English simple and natural — suitable for a language learner.\n");
-        prompt.append("Use clear character names (i.e, Anna: \"Hello!\") before each line.\n");
-        prompt.append("Then, for each line of English, provide a translation into ").append(targetLanguage).append(" below it.\n\n");
 
-        //format example
-        prompt.append("The output format should be:\n\n");
-        prompt.append("1.\n");
-        prompt.append("Alfie: \"I'm so hungry!\"\n");
-        prompt.append("Translation: \"¡Tengo mucha hambre!\"\n\n");
-        prompt.append("2.\n");
-        prompt.append("Betty: \"Welcome to our restaurant!\"\n");
-        prompt.append("Alfie: \"Thank you!\"\n");
-        prompt.append("Translation: \"¡Bienvenido a nuestro restaurante!\"\n");
-        prompt.append("Translation: \"¡Gracias!\"\n\n");
-        prompt.append("...\n");
-        prompt.append("Continue like this for all " + panelDescriptions.size() + " panels.\n");
+        String promptEnd = String.format("""
+                Write 1 or 2 lines of dialogue per panel, spoken by the characters mentioned.
+                Keep the English simple and natural — suitable for a language learner.
+                Use clear character names (i.e, Anna: "Hello!") before each line.
+                Then, for each line of English, provide a translation into %s  below it.
+                The output format should be:
+                1.
+                Alfie: "I'm so hungry!"
+                Translation: "¡Tengo mucha hambre!"
+                2.
+                Betty: "Welcome to our restaurant!"
+                Alfie: "Thank you!"
+                Translation: "¡Bienvenido a nuestro restaurante!"
+                Translation: "¡Gracias!"
+                
+                ...
+                
+                Continue like this for all %s panels.""", targetLanguage, panelDescriptions.size());
+
+        prompt.append(promptEnd);
 
         return prompt.toString();
+    }
+
+    private static String sendPrompt(String prompt) throws IOException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        HttpPost post = new HttpPost("https://api.openai.com/v1/chat/completions");
+        post.addHeader("Content-Type", "application/json");
+        post.addHeader("Authorization", "Bearer " + TranslationProcessor.config.getProperty("api.key"));
+
+        StringEntity entity = new StringEntity("{"
+                + "\"model\": \"" + TranslationProcessor.config.getProperty("llm.model") + "\","
+                + prompt + "}");
+        post.setEntity(entity);
+
+        return OutputProcessor.processResponse(EntityUtils.toString(httpClient.execute(post).getEntity()));
     }
 }
