@@ -64,7 +64,7 @@ class VignetteSchema {
         }
 
         if(hasRight) {
-            Node right = parent.createElement("left");
+            Node right = parent.createElement("right");
             Node id = parent.createElement("id");
             id.appendChild(parent.createTextNode(format.split(", ")[1].split("-")[1].split(":")[1].trim()));
             right.appendChild(id);
@@ -94,6 +94,10 @@ class VignetteSchema {
 
             panel.appendChild(balloon);
         }
+
+        Node background = panel.getOwnerDocument().createElement("setting");
+        background.appendChild(panel.getOwnerDocument().createTextNode(format.split(", ")[0].split("-")[1].trim()));
+        panel.appendChild(background);
 
 
     }

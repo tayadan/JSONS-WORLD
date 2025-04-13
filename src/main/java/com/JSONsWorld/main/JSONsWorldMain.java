@@ -25,10 +25,6 @@ public class JSONsWorldMain {
     public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
         TranslationProcessor.config = new ConfigurationFile(args.length == 0 ? "config.properties" : args[0]);
 
-        //VignetteManager manager = new VignetteManager(new File("specification.xml"));
-        //manager.translateVignettes(TranslationProcessor.config.getProperty("language"));
-        //manager.write("translatedXML.xml");
-
         //sample data
         String[] backgrounds = new String[]{"restaurant exterior", "restaurant interior", "kitchen", "dining table", "school", "classroom", "hallway", "desert", "beach"};
         String[] characters = new String[]{"Anna", "Bob"};
@@ -42,17 +38,5 @@ public class JSONsWorldMain {
         VignetteManager manager = new VignetteManager(panelDescriptions, dialogue);
 
         manager.write("Output.xml");
-
-        //debug descriptions
-        /*System.out.println("Panel Descriptions:");
-        for (String description : panelDescriptions) {
-            System.out.println(description);
-        }
-
-        //debug dialogue
-        System.out.println("\nGenerated Dialogue:");
-        for (String line : dialogue) {
-            System.out.println(line);
-        }*/
     }
 }

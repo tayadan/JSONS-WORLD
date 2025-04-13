@@ -27,10 +27,7 @@ public class StoryManager {
         return sendPrompt(descriptionPrompt);
     }
 
-    //we could change background list to be a map? for categories like
-    //restaurant: restaurant interior, exterior, etc
-    //desert: gobi desert, etc
-    // Seb - Next sprint I guess? I can't be bothered to list them all
+
     public static String buildDescriptionPrompt(String[] backgrounds, String[] characters, String[] poses) {
         return String.format("""
                 You are generating a 6-panel comic story for a language learner. Your first task is to generate the structure. To do this you will pick the backgrounds, characters and poses that will be used.
@@ -59,7 +56,7 @@ public class StoryManager {
 
 
 
-    public static String buildDialoguePrompt(String panelDescriptions, String targetLanguage) {
+    private static String buildDialoguePrompt(String panelDescriptions, String targetLanguage) {
         StringBuilder prompt = new StringBuilder();
 
         String promptBeginning = String.format("""
