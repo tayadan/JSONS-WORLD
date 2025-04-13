@@ -23,6 +23,6 @@ public class OutputProcessor {
             response = response.replaceAll("\\\\t", "\t");
 
         }
-        return response.replaceAll("\"", "");
+        return response.replaceAll("\"", "").replaceAll("\\\\n", "\n");
     }
 }

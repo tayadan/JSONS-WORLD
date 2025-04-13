@@ -30,17 +30,21 @@ public class JSONsWorldMain {
         //manager.write("translatedXML.xml");
 
         //sample data
-        ArrayList<String> backgrounds = new ArrayList<>(List.of("restaurant exterior", "restaurant interior", "kitchen", "dining table, school, classroom, hallway, desert, beach"));
-        ArrayList<String> poses = new ArrayList<>(List.of("walking", "crawling", "sitting", "eating", "standing", "serving", "laughing", "mirage waitress, running, studying, reading, writing"));
-        ArrayList<String> characters = new ArrayList<>(List.of("Anna", "Bob"));
+        String[] backgrounds = new String[]{"restaurant exterior", "restaurant interior", "kitchen", "dining table", "school", "classroom", "hallway", "desert", "beach"};
+        String[] characters = new String[]{"Anna", "Bob"};
+        String[] poses = new String[]{"walking", "crawling", "sitting", "eating", "standing", "serving", "laughing", "mirage", "waitress", "running", "studying", "reading", "writing"};
 
         //panel descriptions
-        List<String> panelDescriptions = generatePanelDescriptions(backgrounds, poses, characters);
+        String panelDescriptions = generatePanelDescriptions(backgrounds, characters, poses);
         //dialogue
-        List<String> dialogue = generateDialogue(panelDescriptions, TranslationProcessor.config.getProperty("language"));
+        String dialogue = generateDialogue(panelDescriptions, TranslationProcessor.config.getProperty("language"));
+
+        VignetteManager manager = new VignetteManager(panelDescriptions, dialogue);
+
+        manager.write("Output.xml");
 
         //debug descriptions
-        System.out.println("Panel Descriptions:");
+        /*System.out.println("Panel Descriptions:");
         for (String description : panelDescriptions) {
             System.out.println(description);
         }
@@ -49,6 +53,6 @@ public class JSONsWorldMain {
         System.out.println("\nGenerated Dialogue:");
         for (String line : dialogue) {
             System.out.println(line);
-        }
+        }*/
     }
 }

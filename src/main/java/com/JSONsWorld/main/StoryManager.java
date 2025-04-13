@@ -15,123 +15,92 @@ import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class StoryManager {
 
-    public static List<String> generatePanelDescriptions(List<String> backgrounds, List<String> poses, List<String> characters) throws IOException {
+    public static String generatePanelDescriptions(String[] backgrounds, String[] characters, String[] poses) throws IOException {
 
-        String descriptionPrompt = buildDescriptionPrompt(backgrounds, poses, characters);
+        String descriptionPrompt = buildDescriptionPrompt(backgrounds, characters, poses);
         //send prompt to LLM
-        String response = sendPrompt(descriptionPrompt);
-
-        return getStrings(response);
-    }
-
-    private static List<String> getStrings(String response) {
-        List<String> parsed = new ArrayList<>();
-        String[] lines = response.split("\n");
-
-        for (String panel : lines) {
-            if (!panel.trim().isEmpty()) {
-                parsed.add(panel.trim());
-            }
-        }
-
-        return parsed;
-    }
-
-    public static List<String> generateDialogue(List<String> panelDescriptions, String targetLanguage) throws IOException {
-
-        String dialoguePrompt = buildDialoguePrompt(panelDescriptions, targetLanguage);
-        // send to LLM
-        String response = sendPrompt(dialoguePrompt);
-
-        return getStrings(response);
+        return sendPrompt(descriptionPrompt);
     }
 
     //we could change background list to be a map? for categories like
     //restaurant: restaurant interior, exterior, etc
     //desert: gobi desert, etc
-    public static String buildDescriptionPrompt(List<String> backgrounds, List<String> poses, List<String> characters) {
-        StringBuilder prompt = new StringBuilder();
-        prompt.append("You are generating a 6-panel comic story for a language learner.\n\n");
-
-        prompt.append("* Backgrounds available to choose from: \n");
-        for (String bg : backgrounds) {
-            prompt.append(" - ").append(bg).append("\n");
-        }
-        prompt.append("\n");
-
-        prompt.append("* Characters available to choose from: \n");
-        for (String bg : characters) {
-            prompt.append(" - ").append(bg).append("\n");
-        }
-        prompt.append("\n");
-
-        prompt.append("* Poses available to choose from: \n");
-        for (String bg : poses) {
-            prompt.append(" - ").append(bg).append("\n");
-        }
-        prompt.append("\n");
-
-        prompt.append("Please generate a short visual description for each panel. Each description should be exactly one line.\n");
-        prompt.append("For each scene description, include 1 or 2 chosen character/s that reoccurs throughout the story.\n");
-        prompt.append("For each scene description, use the poses available to describe what the character/s is/are doing in the scene.\n");
-        prompt.append("The backgrounds for each panel should flow seamlessly, i.e, there should be no panel that has (desert) and another with (moon) as it doesn't make sense.\n");
-        prompt.append("The panels should describe a simple story about this/these characters and have a simple conclusion.\n\n");
-
-        //format example
-        prompt.append("The output format should be:\n\n");
-        prompt.append("1. (background) [scene description]\n");
-        prompt.append("2. (background) ...\n");
-        prompt.append("...\n");
-        prompt.append("6. (background) ...\n");
-
-        return prompt.toString();
+    // Seb - Next sprint I guess? I can't be bothered to list them all
+    public static String buildDescriptionPrompt(String[] backgrounds, String[] characters, String[] poses) {
+        return String.format("""
+                You are generating a 6-panel comic story for a language learner. Your first task is to generate the structure. To do this you will pick the backgrounds, characters and poses that will be used.
+                Backgrounds that you can choose are: %s
+                Characters that you can choose are: %s
+                Poses for the characters are: %s
+                
+                Please keep the backgrounds and characters as consistent as possible and have them flow naturally. Panels may have 1 or 2 characters.
+                Format your response like so (do not put the answers in parenthesis):
+                Background - (Panel 1 background), Characters - (Panel 1 character 1):(Panel 1 character 2), Poses - (Panel 1 character 1 pose):(Panel 1 character 2 pose)
+                Background - (Panel 2 background), Characters - (Panel 2 character 1):(Panel 2 character 2), Poses - (Panel 2 character 1 pose):(Panel 2 character 2 pose)
+                ...
+                
+                Don't send anything except your formatted response. Please note the : denoting that the 2 characters/poses are in the same panel, remember to include it even if only 1 character is in the panel. Remember, this is a 6 panel comic and should flow as a normal comic would.""", String.join(", ", backgrounds),
+                String.join(", ", characters), String.join(", ", poses));
     }
 
-    public static String buildDialoguePrompt(List<String> panelDescriptions, String targetLanguage) {
+    public static String generateDialogue(String panelDescriptions, String targetLanguage) throws IOException {
+
+        String dialoguePrompt = buildDialoguePrompt(panelDescriptions, targetLanguage);
+        // send to LLM
+        String response = sendPrompt(dialoguePrompt);
+
+        return response;
+    }
+
+
+
+    public static String buildDialoguePrompt(String panelDescriptions, String targetLanguage) {
         StringBuilder prompt = new StringBuilder();
 
-        String promptBeginning = """
-                Based on the following panel descriptions, please write simple, short dialogue for the characters in each panel. The dialogue should match the actions and scenes described.
+        String promptBeginning = String.format("""
+                Based on the following panel descriptions, please write simple, short dialogue for the characters in each panel with an included translation in %s. The dialogue should match the actions and scenes described.
                 
-                """;
+                """, targetLanguage);
 
         prompt.append(promptBeginning);
 
         //descriptions from llm response from previous prompt
-        prompt.append("Panel descriptions:\n");
-        for (int i = 0; i < panelDescriptions.size(); i++) {
-            prompt.append((i + 1)).append(". ").append(panelDescriptions.get(i)).append("\n");
-        }
+        prompt.append("Panel descriptions:\n").append(panelDescriptions);
+
 
 
         String promptEnd = String.format("""
                 Write 1 or 2 lines of dialogue per panel, spoken by the characters mentioned.
                 Keep the English simple and natural — suitable for a language learner.
-                Use clear character names (i.e, Anna: "Hello!") before each line.
+                Use clear character names (i.e, Anna: Hello!) before each line.
                 Then, for each line of English, provide a translation into %s  below it.
-                The output format should be:
-                1.
-                Alfie: "I'm so hungry!"
-                Translation: "¡Tengo mucha hambre!"
-                2.
-                Betty: "Welcome to our restaurant!"
-                Alfie: "Thank you!"
-                Translation: "¡Bienvenido a nuestro restaurante!"
-                Translation: "¡Gracias!"
-                
+                For example, if the language is Spanish and the backgrounds from the panel descriptions imply it should be in a restaurant, then the output format should be:
+                Alfie: I'm so hungry!|¡Tengo mucha hambre!
+                -
+                Betty: Welcome to our restaurant!|¡Bienvenido a nuestro restaurante!
+                -
+                Alfie: Thank you! Where can I sit?|¡Gracias! ¿Dónde puedo sentarme?
                 ...
                 
-                Continue like this for all %s panels.""", targetLanguage, panelDescriptions.size());
+                Please note the - separating panels and the | separating text from their translations. ONLY ONE CHARACTER MAY SPEAK PER PANEL. Continue like this for all %s panels.""", targetLanguage, panelDescriptions.split("\n").length);
 
         prompt.append(promptEnd);
 
         return prompt.toString();
     }
 
+
+
+    // ------------------------------------------------------------
+
+
+
+    // ------------------------------------------------------------
     private static String sendPrompt(String prompt) throws IOException {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost post = new HttpPost("https://api.openai.com/v1/chat/completions");

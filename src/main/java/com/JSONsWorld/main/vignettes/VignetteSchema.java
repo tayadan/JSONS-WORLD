@@ -1,5 +1,7 @@
 package com.JSONsWorld.main.vignettes;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -38,6 +40,63 @@ class VignetteSchema {
             }
 
         }
+    }
+
+    protected VignetteSchema(String format, String dialogue, Document parent, Element panel) {
+        this.panel = panel;
+        boolean hasRight = !format.split(", ")[1].split(":")[1].trim().isEmpty();
+
+        {
+            Node left = parent.createElement("left");
+            Node id = parent.createElement("id");
+            id.appendChild(parent.createTextNode(format.split(", ")[1].split("-")[1].split(":")[0].trim()));
+            left.appendChild(id);
+
+            Node name = parent.createElement("name");
+            name.appendChild(parent.createTextNode(format.split(", ")[1].split("-")[1].split(":")[0].trim()));
+            left.appendChild(name);
+
+            Node pose = parent.createElement("pose");
+            pose.appendChild(parent.createTextNode(format.split(", ")[2].split("-")[1].split(":")[0].trim()));
+            left.appendChild(pose);
+
+            panel.appendChild(left);
+        }
+
+        if(hasRight) {
+            Node right = parent.createElement("left");
+            Node id = parent.createElement("id");
+            id.appendChild(parent.createTextNode(format.split(", ")[1].split("-")[1].split(":")[1].trim()));
+            right.appendChild(id);
+
+            Node name = parent.createElement("name");
+            name.appendChild(parent.createTextNode(format.split(", ")[1].split("-")[1].split(":")[1].trim()));
+            right.appendChild(name);
+
+            Node pose = parent.createElement("pose");
+            pose.appendChild(parent.createTextNode(format.split(", ")[2].split("-")[1].split(":")[1].trim()));
+            right.appendChild(pose);
+
+            panel.appendChild(right);
+        }
+
+        System.out.println(dialogue);
+        if(dialogue.trim().contains("|")) {
+            Element balloon = parent.createElement("balloon");
+            balloon.setAttribute("status", "speech");
+
+            Node text = parent.createElement("text");
+            text.appendChild(parent.createTextNode(dialogue.split("\\|")[0].trim()));
+            balloon.appendChild(text);
+
+            Node translation = parent.createElement("translation");
+            translation.appendChild(parent.createTextNode(dialogue.split("\\|")[1].trim()));
+            balloon.appendChild(translation);
+
+            panel.appendChild(balloon);
+        }
+
+
     }
 
     protected void setTranslations(String... translations) {
