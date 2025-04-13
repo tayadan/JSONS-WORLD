@@ -80,7 +80,6 @@ class VignetteSchema {
             panel.appendChild(right);
         }
 
-        System.out.println(dialogue);
         if(dialogue.trim().contains("|")) {
             Element balloon = parent.createElement("balloon");
             balloon.setAttribute("status", "speech");
