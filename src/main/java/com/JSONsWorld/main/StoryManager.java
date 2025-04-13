@@ -8,6 +8,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -54,13 +58,22 @@ public class StoryManager {
         prompt.append("You are generating a 6-panel comic story for a language learner.\n\n");
 
         prompt.append("* Backgrounds available to choose from: \n");
-        prompt.append(backgrounds.toString()).append("\n\n");
+        for (String bg : backgrounds) {
+            prompt.append(" - ").append(bg).append("\n");
+        }
+        prompt.append("\n");
 
         prompt.append("* Characters available to choose from: \n");
-        prompt.append(characters.toString()).append("\n\n");
+        for (String bg : characters) {
+            prompt.append(" - ").append(bg).append("\n");
+        }
+        prompt.append("\n");
 
         prompt.append("* Poses available to choose from: \n");
-        prompt.append(poses.toString()).append("\n\n");
+        for (String bg : poses) {
+            prompt.append(" - ").append(bg).append("\n");
+        }
+        prompt.append("\n");
 
         prompt.append("Please generate a short visual description for each panel. Each description should be exactly one line.\n");
         prompt.append("For each scene description, include 1 or 2 chosen character/s that reoccurs throughout the story.\n");
@@ -121,14 +134,24 @@ public class StoryManager {
 
     private static String sendPrompt(String prompt) throws IOException {
         CloseableHttpClient httpClient = HttpClients.createDefault();
-
         HttpPost post = new HttpPost("https://api.openai.com/v1/chat/completions");
+
         post.addHeader("Content-Type", "application/json");
         post.addHeader("Authorization", "Bearer " + TranslationProcessor.config.getProperty("api.key"));
 
-        StringEntity entity = new StringEntity("{"
-                + "\"model\": \"" + TranslationProcessor.config.getProperty("llm.model") + "\","
-                + prompt + "}");
+        // Build JSON body
+        JsonObject message = new JsonObject();
+        message.addProperty("role", "user");
+        message.addProperty("content", prompt);
+
+        JsonArray messages = new JsonArray();
+        messages.add(message);
+
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("model", TranslationProcessor.config.getProperty("llm.model"));
+        requestBody.add("messages", messages);
+
+        StringEntity entity = new StringEntity(new Gson().toJson(requestBody), "UTF-8");
         post.setEntity(entity);
 
         return OutputProcessor.processResponse(EntityUtils.toString(httpClient.execute(post).getEntity()));
