@@ -36,6 +36,8 @@ public class StoryManager {
                 Poses for the characters are: %s
                 
                 Please keep the backgrounds and characters as consistent as possible and have them flow naturally. Panels may have 1 or 2 characters.
+                Make sure backgrounds don't change entire settings like from restaurant to desert as that's not realistic.
+                Don't use all the backgrounds. At most use 1-3 different types that don't change the flow of story, since we assume that the characters stay in one setting.
                 Format your response like so (do not put the answers in parenthesis):
                 Background - (Panel 1 background), Characters - (Panel 1 character 1):(Panel 1 character 2), Poses - (Panel 1 character 1 pose):(Panel 1 character 2 pose)
                 Background - (Panel 2 background), Characters - (Panel 2 character 1):(Panel 2 character 2), Poses - (Panel 2 character 1 pose):(Panel 2 character 2 pose)
@@ -53,6 +55,8 @@ public class StoryManager {
 
         return response;
     }
+
+
 
 
 
