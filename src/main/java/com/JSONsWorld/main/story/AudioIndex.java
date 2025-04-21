@@ -1,6 +1,8 @@
-package com.JSONsWorld.main;
+package com.JSONsWorld.main.story;
 
 import org.w3c.dom.*;
+
+import javax.print.Doc;
 import javax.xml.parsers.*;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -77,6 +79,40 @@ public class AudioIndex {
         }
     }
 
+    public void processXml(Document document, String fileName) {
+        try {
+            NodeList panels = document.getElementsByTagName("panel");
+
+            // iterate over panels to get original text and translated text
+            for (int i = 0; i < panels.getLength(); i++) {
+                Element panel = (Element) panels.item(i);
+
+                NodeList balloons = panel.getElementsByTagName("balloon");
+                for (int j = 0; j < balloons.getLength(); j++) {
+                    Element balloon = (Element) balloons.item(j);
+                    String originalText = balloon.getElementsByTagName("text").item(0).getTextContent();
+                    String translationText = balloon.getElementsByTagName("translation").item(0).getTextContent();
+
+                    //tag panel w audioinfo and generate mp3 for original and translated texts
+                    // generate mp3 for the original text (English)
+                    String originalFileName = generateAudio(originalText, englishDir, i, "original");
+                    balloon.setAttribute("audio", originalFileName);
+
+                    // generate mp3 for the translated text
+                    String translationFileName = generateAudio(translationText, targetDir, i, "translated");
+                    balloon.setAttribute("audio_translation", translationFileName);
+                }
+            }
+
+            // save updated xml with the audio stuff
+            updateXML(document, fileName);
+
+        } catch (Exception e) {
+            System.err.println("Error processing XML: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     //generate mp3 if it doesn't exist already
     private String generateAudio(String text, Path dir, int panelIndex, String type) {
         try {
@@ -99,10 +135,12 @@ public class AudioIndex {
             conn.setRequestProperty("Content-Type", "application/json");
 
             String payload = String.format(
-                    "{\"model\":\"%s\",\"input\":\"%s\",\"voice\":\"%s\"}",
-                    model,
-                    text.replace("\"", "\\\""),
-                    voice
+                    "{" +
+                            "\"model\":\"%s\"," +
+                            "\"input\":\"%s\"," +
+                            "\"voice\":\"%s\"" +
+                    "}",
+                    model, text.replace("\"", "\\\""), voice
             );
 
             try (OutputStream os = conn.getOutputStream()) {
@@ -110,9 +148,7 @@ public class AudioIndex {
                 os.flush();
             }
 
-            if (conn.getResponseCode() != 200) {
-                throw new IOException("TTS failed: " + conn.getResponseCode());
-            }
+            if (conn.getResponseCode() != 200) throw new IOException("TTS failed: " + conn.getResponseCode());
 
             try (InputStream in = conn.getInputStream();
                  OutputStream out = Files.newOutputStream(filePath)) {
@@ -133,7 +169,7 @@ public class AudioIndex {
         }
     }
 
-    //copy of the write in VignetteManager
+    //copy of the write method in VignetteManager
     private void updateXML(Document document, String fileName) {
         try{
             TransformerFactory transformerFactory = TransformerFactory.newInstance();

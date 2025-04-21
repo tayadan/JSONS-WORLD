@@ -1,6 +1,5 @@
-package com.JSONsWorld.main;
+package com.JSONsWorld.main.story;
 
-import com.JSONsWorld.main.api.ContextManager;
 import com.JSONsWorld.main.api.OutputProcessor;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -13,10 +12,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class StoryManager {
 

@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class ConfigurationFile {
@@ -60,6 +61,11 @@ public class ConfigurationFile {
             String originalValue = properties.getProperty(property);
             properties.remove(property);
             properties.put(property.toLowerCase(), originalValue);
+        }
+
+        // To allow for loading arrays
+        for(Map.Entry<Object, Object> property : properties.entrySet()) {
+
         }
     }
 

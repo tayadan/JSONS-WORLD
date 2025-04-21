@@ -1,6 +1,6 @@
 package com.JSONsWorld.main.vignettes;
 
-import com.JSONsWorld.main.TranslationProcessor;
+import com.JSONsWorld.main.story.TranslationProcessor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -16,6 +16,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
@@ -92,6 +93,11 @@ public class VignetteManager {
 
     public void write(String fileName) {
         try{
+            // Creates the file in the clunkiest way imaginable
+            FileWriter writer = new FileWriter(fileName);
+            writer.write("");
+            writer.close();
+
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -100,7 +106,7 @@ public class VignetteManager {
             transformer.transform(source, result);
 
             System.out.println("XML file created.");
-        } catch (TransformerException e) {
+        } catch (TransformerException | IOException e) {
             throw new RuntimeException(e);
         }
     }

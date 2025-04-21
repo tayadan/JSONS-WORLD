@@ -44,7 +44,10 @@ class VignetteSchema {
 
     protected VignetteSchema(String format, String dialogue, Document parent, Element panel) {
         this.panel = panel;
-        boolean hasRight = !format.split(", ")[1].split(":")[1].trim().isEmpty();
+        boolean hasRight = false;
+        try {
+            hasRight = !format.split(", ")[1].split(":")[1].trim().isEmpty();
+        } catch (IndexOutOfBoundsException e) {}
 
         {
             Node left = parent.createElement("left");
