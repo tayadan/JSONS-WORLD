@@ -29,7 +29,16 @@ public class JSONsWorldMain {
             String panelDescriptions = generatePanelDescriptions(backgrounds, characters, poses);
             //dialogue
             String dialogue = generateDialogue(panelDescriptions, TranslationProcessor.config.getProperty("language"));
-            VignetteManager manager = new VignetteManager(panelDescriptions, dialogue);
+
+            VignetteManager manager = new VignetteManager();
+            manager.addFormattedPanels(panelDescriptions, dialogue);
+
+            String tsvLine = "attracted\tto fall in love, love\t\t nude, posing\tbedroom, red carpet event, locker room\t1039";
+            manager.appendPanelFromTsv(tsvLine, true);  // uses "combined" text
+
+            String anotherTsvLine = "catering\tto serve, a tray, a cocktail\t a tray\teating, drinking, sipping, slurping\trestaurant, food truck\t";
+            manager.appendPanelFromTsv(anotherTsvLine, false);  // uses "left" text
+
             new File("output").mkdir();
             manager.write("output/Output.xml");
 
@@ -48,7 +57,7 @@ public class JSONsWorldMain {
                     "output/audio/english",
                     "output/audio/" + TranslationProcessor.config.getProperty("language")
             );
-            audioIndex.processXml("output/Output.xml"); //AUDIO IS GENERATED FOR XML FILE AND IS UPDATED ACCORDINGLY.
+            audioIndex.processXml("output/New.xml"); //AUDIO IS GENERATED FOR XML FILE AND IS UPDATED ACCORDINGLY.
         }
     }
 }
