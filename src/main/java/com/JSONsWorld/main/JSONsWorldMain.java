@@ -59,5 +59,44 @@ public class JSONsWorldMain {
             );
             audioIndex.processXml("output/New.xml"); //AUDIO IS GENERATED FOR XML FILE AND IS UPDATED ACCORDINGLY.
         }
+
+
+        // ---------------------BASE CODE FOR SCHEDULE----------------------
+        //conjugation needs to be implemented (preferable w different panels and dialogue into formatted function
+        //left and whole text not fully implemented
+        //we need function that goes in tsv file and randomly selects a line that has a left text in it and use it and translate word
+        //and for combined aswell
+        //these will be passed in function and panel should be generated (doesnt generate well yet, no translation implementation and no balloon for dialogue yet
+
+
+        //String[] schedule = {"conjugation", "left", "whole", "story", "left", "whole", "conjugation", "left", "conjugation", "whole", "story"};
+        String[] schedule = TranslationProcessor.config.getProperty("schedule").trim().split(",\\h*");
+        VignetteManager manager = new VignetteManager();
+
+        for (String type : schedule) {
+            switch (type.trim().toLowerCase()) {
+                case "conjugation":
+                    manager.addFormattedPanels(panelsForConjugation, dialoguefromconjugationprompt);
+                    break;
+                case "left":
+                    manager.appendPanelFromTsv(TSVLEFTSELECTEDLINE, false); //tsv line will be taken from file and one w left text in it
+                    break;
+                case "whole":
+                    manager.appendPanelFromTsv(TSVWHOLESELECTEDLINE, true); //tsv line taken random from file with combined text in it
+                    break;
+                case "story":
+                    String panelDescriptions = generatePanelDescriptions(backgrounds, characters, poses);
+                    String dialogue = generateDialogue(panelDescriptions, TranslationProcessor.config.getProperty("language"));
+                    manager.addFormattedPanels(panelDescriptions, dialogue);
+                    break;
+                default:
+                    System.out.println("Unknown lesson type: " + type);
+                    break;
+            }
+
+            manager.write("outputfile");
+            //audio index to be generated
+
+
     }
 }
