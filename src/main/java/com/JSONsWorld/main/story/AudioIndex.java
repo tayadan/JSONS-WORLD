@@ -105,7 +105,7 @@ public class AudioIndex {
                 return safeName;
             }
 
-            System.out.println("Generating audio for: " + text); //debugging line
+            System.out.println("Generating audio for: " + text);
 
             //request for tts
             HttpURLConnection conn = (HttpURLConnection) new URL("https://api.openai.com/v1/audio/speech").openConnection();

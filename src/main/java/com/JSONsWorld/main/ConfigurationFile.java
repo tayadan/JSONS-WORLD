@@ -16,7 +16,7 @@ public class ConfigurationFile {
     public ConfigurationFile(String fileName) {
         this.properties = new Properties();
 
-        properties.put("schedule", "conjugation, left, whole,  story, left, whole, conjugation, left, conjugation, whole, story");
+        properties.put("schedule", "conjugation, left, whole, story, left, whole, conjugation, left, conjugation, whole, story");
 
         properties.put("conjugation.prompt", "Please create a comic revolving around conjugation in {language}. Make sure each line of dialogue has a corresponding translation.");
         properties.put("left.prompt", "Please create a comic with the first character in each scene talking in {language} and the other one translating what they say into English.");

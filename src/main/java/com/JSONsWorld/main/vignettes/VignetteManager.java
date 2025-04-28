@@ -91,57 +91,6 @@ public class VignetteManager {
         this.scenes.add(new Scene(scene, panels));
     }
 
-    public void appendPanelFromTsv(String tsvLine, boolean useCombined) {
-        String[] fields = tsvLine.split("\t");
-
-        if (fields.length < 6) {
-            System.out.println("TSV line skipped: not enough fields.");
-            return;
-        }
-
-        String leftPose = fields[0].trim();
-        String combinedText = fields[1].trim();
-        String leftText = fields[2].trim();
-        String rightPose = fields[3].trim();
-        String backgrounds = fields[4].trim();
-
-        //decide text to use
-        String dialogue;
-        if (useCombined) {
-            if (combinedText.isEmpty()) {
-                System.out.println("TSV line skipped: no combined text.");
-                return;
-            }
-            dialogue = combinedText;
-        } else {
-            if (leftText.isEmpty()) {
-                System.out.println("TSV line skipped: no left text.");
-                return;
-            }
-            dialogue = leftText;
-        }
-
-        //random background chosen
-        String[] backgroundOptions = backgrounds.split(",");
-        String chosenBackground = backgroundOptions[(int)(Math.random() * backgroundOptions.length)].trim();
-
-        NodeList scenesList = document.getElementsByTagName("scene");
-        if (scenesList.getLength() == 0) throw new RuntimeException("No <scene> element found.");
-        Element scene = document.createElement("scene");
-
-        Element panelElement = document.createElement("panel");
-        scene.appendChild(panelElement);
-
-        String[] characters = TranslationProcessor.config.getProperty("characters").trim().split("\\s*,\\s*");
-
-        String format = "background-" + chosenBackground + ", left-" + characters[0] + ":-, right-" + characters[1] + ":-, pose-" + leftPose + ":" + rightPose;
-
-        ArrayList<VignetteSchema> panels = new ArrayList<>();
-        panels.add(new VignetteSchema(format, dialogue, this.document, panelElement));
-
-        scenes.add(new Scene(scene, panels));
-    }
-
     public void write(String fileName) {
         Node scenesElement = document.getElementsByTagName("scenes").item(0);
         for(Scene scene : scenes) {
