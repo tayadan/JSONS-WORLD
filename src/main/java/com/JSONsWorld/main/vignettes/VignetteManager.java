@@ -142,40 +142,6 @@ public class VignetteManager {
         scenes.add(new Scene(scene, panels));
     }
 
-
-
-    public void translateVignettes(String language) throws IOException {
-        /*ArrayList<String[]> textToTranslate = new ArrayList<>();
-
-        panels.forEach(panel -> textToTranslate.add(panel.getOriginalText()));
-        textToTranslate.removeIf(text -> text.length == 0);
-
-        String[] formattedPanels = new String[textToTranslate.size()];
-        for (int i = 0; i < textToTranslate.size(); i++) {
-            formattedPanels[i] = String.join("\n", textToTranslate.get(i));
-        }
-
-        // Sends the text to translate
-        String toTranslate = String.join("\n-\n", formattedPanels);
-        String result = TranslationProcessor.translate(language, toTranslate);
-
-        // Gets the result and formats it properly
-        result = result.replaceAll("\\\\n", "\n").replaceAll("-", "");
-        ArrayList<String> results = new ArrayList<>(Arrays.asList(result.split("\n")));
-        results.removeIf(r -> r.trim().isEmpty());
-        Queue<String> resultsQueue = new LinkedList<>();
-        results.forEach(r -> resultsQueue.add(r.trim()));
-
-        //
-        panels.forEach(panel -> {
-            String[] setTranslations = new String[panel.getExtractedCount()];
-            for(int i = 0; i < panel.getExtractedCount(); i++) {
-                setTranslations[i] = resultsQueue.remove();
-            }
-            panel.setTranslations(setTranslations);
-        });*/
-    }
-
     public void write(String fileName) {
         Node scenesElement = document.getElementsByTagName("scenes").item(0);
         for(Scene scene : scenes) {

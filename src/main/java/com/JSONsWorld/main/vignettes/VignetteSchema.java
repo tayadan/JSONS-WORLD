@@ -117,64 +117,6 @@ public class VignetteSchema {
 
     }
 
-    protected void setTranslations(String... translations) {
-        Queue<String> translatedQueue = new LinkedList<>();
-        for(int i = 0; i < extractedText.size(); i++) {
-            extractedText.get(i).setTranslation(translations[i]);
-            translatedQueue.add(translations[i]);
-        }
-
-
-        NodeList list = panel.getChildNodes();
-
-        Node childNode = null;
-        for(int i = 0; i < list.getLength(); i++) {
-            childNode = list.item(i);
-
-            if(childNode.getNodeName().equalsIgnoreCase("left") ||
-                    childNode.getNodeName().equalsIgnoreCase("middle") ||
-                    childNode.getNodeName().equalsIgnoreCase("right"))
-            {
-                NodeList grandChildNodes = childNode.getChildNodes();
-
-                for(int j = 0; j < grandChildNodes.getLength(); j++) {
-                    if(grandChildNodes.item(j).getNodeName().equalsIgnoreCase("balloon")) {
-                        Node t = panel.getOwnerDocument().createElement("translation");
-                        t.appendChild(panel.getOwnerDocument().createTextNode(translatedQueue.remove()));
-                        grandChildNodes.item(j).appendChild(t);
-                    }
-                }
-            }
-
-        }
-    }
-
-    public boolean hasTranslation() {
-        if(extractedText.isEmpty()) return false;
-        return !extractedText.getFirst().getOriginal().trim().isEmpty();
-
-    }
-
-    public String[] getOriginalText() {
-        String[] text = new String[extractedText.size()];
-        for(int i = 0; i < extractedText.size(); i++) {
-            text[i] = extractedText.get(i).original;
-        }
-        return text;
-    }
-
-    public String[] getTranslatedText() {
-        String[] text = new String[extractedText.size()];
-        for(int i = 0; i < extractedText.size(); i++) {
-            text[i] = extractedText.get(i).translation;
-        }
-        return text;
-    }
-
-    protected int getExtractedCount() {
-        return extractedText.size();
-    }
-
     private class TextAndTranslation {
         private String original = "";
         private String translation = "";

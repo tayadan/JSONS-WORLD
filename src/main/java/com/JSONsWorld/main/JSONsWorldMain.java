@@ -18,9 +18,7 @@ public class JSONsWorldMain {
 
 
         // Checks if the file exists then creates it if it doesn't
-        if(!new File("output/Output.xml").exists()) {
-            generateOutput();
-        }
+        if(!new File("output/Output.xml").exists()) generateOutput();
         else {
             AudioIndex audioIndex = new AudioIndex(
                     "tts-1",
@@ -30,17 +28,6 @@ public class JSONsWorldMain {
             );
             audioIndex.processXml("output/Output.xml"); //AUDIO IS GENERATED FOR XML FILE AND IS UPDATED ACCORDINGLY.
         }
-
-
-        // ---------------------BASE CODE FOR SCHEDULE----------------------
-        //conjugation needs to be implemented (preferable w different panels and dialogue into formatted function
-        //left and whole text not fully implemented
-        //we need function that goes in tsv file and randomly selects a line that has a left text in it and use it and translate word
-        //and for combined aswell
-        //these will be passed in function and panel should be generated (doesn't generate well yet, no translation implementation and no balloon for dialogue yet
-
-
-        //String[] schedule = {"conjugation", "left", "whole", "story", "left", "whole", "conjugation", "left", "conjugation", "whole", "story"};
 
     }
 

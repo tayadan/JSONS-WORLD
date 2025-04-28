@@ -14,9 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.*;
 
-//class made cuz it was needed.
-//i made it so it takes in an xml file (for last sprint we will need this to process whole xml file w all dialogue"
-//audio is generated and placed inside the audio tags and updates the xml
+
 public class AudioIndex {
     private final String model;
     private final String voice;

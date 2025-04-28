@@ -60,17 +60,6 @@ public class ConfigurationFile {
         }
     }
 
-    /*
-    Current properties:
-    1. api.key
-    2. prompt
-    3. llm.model
-    4. context
-
-    Future properties:
-    1. language
-    */
-
     private void loadProperties(String fileName){
         if(!new File(fileName).exists()) return; // There are some default values, so it's not necessary to specify a config file
         try (FileReader reader = new FileReader(fileName)) {
