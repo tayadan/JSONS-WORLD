@@ -23,7 +23,7 @@ mvn clean install
 mvn package
 
 In console run:
-java -jar (Path to jar file)
+java -jar (Path to jar file) (path to config file)
 
 The path to the runnable jar is:
 target/JSONsWorld-1.0-SNAPSHOT-jar-with-dependencies.jar
