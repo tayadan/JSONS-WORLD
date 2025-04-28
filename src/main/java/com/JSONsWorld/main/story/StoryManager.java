@@ -98,8 +98,9 @@ public class StoryManager {
                 - Keep the English simple and natural — suitable for a language learner.
                 - Use clear character names (i.e, Anna: Hello!) before each line.
                 - If the prompt mentions providing a translation, for each line of English, provide a translation into %s below it. Otherwise, do not provide a translation.
-                DO NOT provide a Translation if the prompt says another character will translate the text. This means a character says something then in the next panel another character translates it.
+                - DO NOT provide a Translation if the prompt says another character will translate the text. This means a character says something then in the next panel another character translates it.
                 - ONLY ONE CHARACTER MAY SPEAK PER-PANEL
+                - While translations do not need to be provided (depending on the prompt) please keep English on the left of the " if there are translations.
                 For example, if the language is Spanish and the backgrounds from the panel descriptions imply it should be in a restaurant, then the output format should be:
                 Alfie: I'm so hungry!|¡Tengo mucha hambre!
                 -
@@ -110,7 +111,7 @@ public class StoryManager {
                 ...
                 
                 Please note the - separating panels and the | separating text from their translations. Also note that 2 characters speaking in the same panel aren't separated by a -. Continue like this for all %s panels.
-                DO NOT DIVERGE FROM THIS FORMAT.""", targetLanguage, panelDescriptions.split("\n").length);
+                DO NOT DIVERGE FROM THIS FORMAT. ENGLISH TEXT MUST ALWAYS BE ON THE LEFT OF THE | IF THERE IS A TRANSLATION PRESENT.""", targetLanguage, panelDescriptions.split("\n").length);
 
         prompt.append(promptEnd);
 
