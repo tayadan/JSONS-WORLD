@@ -15,6 +15,30 @@ public class ConfigurationFile {
 
     public ConfigurationFile(String fileName) {
         this.properties = new Properties();
+
+        properties.put("schedule", "conjugation, left, whole,  story, left, whole, conjugation, left, conjugation, whole, story");
+
+        properties.put("conjugation.prompt", "Please create a comic revolving around conjugation in {language}. Make sure each line of dialogue has a corresponding translation.");
+        properties.put("left.prompt", "Please create a comic with the first character in each scene talking in {language} and the other one translating what they say into English.");
+        properties.put("whole.prompt", "Please create a comic with both characters peaking in {language} and specify translations for each character.");
+        properties.put("story.prompt", "Please create a comic involving characters speaking in both {language} and English. Translations do NOT need to be specified, but make sure it includes both languages.");
+
+        properties.put("conjugation.backgrounds", "restaurant exterior, restaurant interior, kitchen, dining table, school, classroom, hallway, desert, beach, ocean, mountain, park, street");
+        properties.put("conjugation.characters", "Anna, Bob");
+        properties.put("conjugation.poses", "walking, crawling, sitting, eating, standing, serving, laughing, talking, running, studying, reading, writing, happy, angry");
+
+        properties.put("left.backgrounds", "restaurant exterior, restaurant interior, kitchen, dining table, school, classroom, hallway, desert, beach, ocean, mountain, park, street");
+        properties.put("left.characters", "Anna, Bob");
+        properties.put("left.poses", "walking, crawling, sitting, eating, standing, serving, laughing, talking, running, studying, reading, writing, happy, angry");
+
+        properties.put("whole.backgrounds", "restaurant exterior, restaurant interior, kitchen, dining table, school, classroom, hallway, desert, beach, ocean, mountain, park, street");
+        properties.put("whole.characters", "Anna, Bob");
+        properties.put("whole.poses", "walking, crawling, sitting, eating, standing, serving, laughing, talking, running, studying, reading, writing, happy, angry");
+
+        properties.put("story.backgrounds", "restaurant exterior, restaurant interior, kitchen, dining table, school, classroom, hallway, desert, beach, ocean, mountain, park, street");
+        properties.put("story.characters", "Anna, Bob");
+        properties.put("story.poses", "walking, crawling, sitting, eating, standing, serving, laughing, talking, running, studying, reading, writing, happy, angry");
+
         loadProperties(fileName);
 
         if(!properties.containsKey("api.key")) {

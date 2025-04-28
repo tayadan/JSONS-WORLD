@@ -57,6 +57,7 @@ public class AudioIndex {
                 for (int j = 0; j < balloons.getLength(); j++) {
                     Element balloon = (Element) balloons.item(j);
                     String originalText = balloon.getElementsByTagName("text").item(0).getTextContent();
+
                     String translationText = balloon.getElementsByTagName("translation").item(0).getTextContent();
 
                     //tag panel w audioinfo and generate mp3 for original and translated texts
@@ -129,7 +130,9 @@ public class AudioIndex {
                 os.flush();
             }
 
-            if (conn.getResponseCode() != 200) throw new IOException("TTS failed: " + conn.getResponseCode());
+            if (conn.getResponseCode() != 200) {
+                throw new IOException("TTS failed: " + conn.getResponseCode());
+            }
 
             try (InputStream in = conn.getInputStream();
                  OutputStream out = Files.newOutputStream(filePath)) {
@@ -140,7 +143,7 @@ public class AudioIndex {
                 }
             }
 
-            System.out.println("Saved: " + filePath.getFileName());
+            System.out.println("Saved: " + filePath.getFileName() + "\n");
             return safeName;
 
         } catch (IOException e) {

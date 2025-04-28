@@ -3,6 +3,7 @@ package com.JSONsWorld.main.vignettes;
 import com.JSONsWorld.main.story.TranslationProcessor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -21,9 +22,8 @@ import java.io.IOException;
 import java.util.*;
 
 public class VignetteManager {
-
-    private ArrayList<VignetteSchema> panels = new ArrayList<>();
     protected Document document;
+    private ArrayList<Scene> scenes = new ArrayList<>();
 
     public VignetteManager(File source) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -32,10 +32,11 @@ public class VignetteManager {
         // Parse the XML file
         this.document = builder.parse(source);
 
-        NodeList xmlPanels = document.getElementsByTagName("panel");
+        NodeList xmlPanels = document.getElementsByTagName("scene");
+
 
         for(int i = 0; i < xmlPanels.getLength(); i++) {
-            this.panels.add(new VignetteSchema(xmlPanels.item(i)));
+            this.scenes.add(new Scene((Element) xmlPanels.item(i)));
         }
     }
 
@@ -44,23 +45,12 @@ public class VignetteManager {
         Element root = document.createElement("comic");
         document.appendChild(root);
         root.appendChild(document.createElement("figures"));
+
         Element scenes = document.createElement("scenes");
         scenes.appendChild(document.createElement("scene"));
         root.appendChild(scenes);
-        this.panels = new ArrayList<>();
-    }
-    public void addFormattedPanels(String format, String dialogue) {
-        NodeList scenesList = document.getElementsByTagName("scene");
-        if (scenesList.getLength() == 0) throw new RuntimeException("No <scene> element found.");
-        Element scene = (Element) scenesList.item(0);
 
-        int panelIndex = 0;
-        for (String line : format.split("\n")) {
-            Element panelElement = document.createElement("panel");
-            scene.appendChild(panelElement);
-            panels.add(new VignetteSchema(line.trim(), dialogue.split("-")[panelIndex], this.document, panelElement));
-            panelIndex++;
-        }
+        this.scenes = new ArrayList<>();
     }
 
     public VignetteManager(String format, String dialogue) throws ParserConfigurationException {
@@ -71,16 +61,34 @@ public class VignetteManager {
         document.appendChild(root);
         root.appendChild(document.createElement("figures"));
         Element scenes = document.createElement("scenes");
-        scenes.appendChild(document.createElement("scene"));
+        root.appendChild(scenes);
 
+        Element scene = document.createElement("scene");
+
+        ArrayList<VignetteSchema> panels = new ArrayList<>();
         for(String line : format.split("\n")) {
             Element panelElement = document.createElement("panel");
-            scenes.getChildNodes().item(0).appendChild(panelElement);
+            scene.appendChild(panelElement);
             panels.add(new VignetteSchema(line.trim(), dialogue.split("-")[panel], this.document, panelElement));
             panel++;
         }
 
-        root.appendChild(scenes);
+        this.scenes.add(new Scene(scene, panels));
+    }
+
+    public void addNewScene(String format, String dialogue) {
+        Element scene = document.createElement("scene");
+
+        ArrayList<VignetteSchema> panels = new ArrayList<>();
+        int panelIndex = 0;
+        for (String line : format.split("\n")) {
+            Element panelElement = document.createElement("panel");
+            scene.appendChild(panelElement);
+            panels.add(new VignetteSchema(line.trim(), dialogue.split("-")[panelIndex], this.document, panelElement));
+            panelIndex++;
+        }
+
+        this.scenes.add(new Scene(scene, panels));
     }
 
     public void appendPanelFromTsv(String tsvLine, boolean useCombined) {
@@ -119,7 +127,7 @@ public class VignetteManager {
 
         NodeList scenesList = document.getElementsByTagName("scene");
         if (scenesList.getLength() == 0) throw new RuntimeException("No <scene> element found.");
-        Element scene = (Element) scenesList.item(0);
+        Element scene = document.createElement("scene");
 
         Element panelElement = document.createElement("panel");
         scene.appendChild(panelElement);
@@ -128,14 +136,16 @@ public class VignetteManager {
 
         String format = "background-" + chosenBackground + ", left-" + characters[0] + ":-, right-" + characters[1] + ":-, pose-" + leftPose + ":" + rightPose;
 
-
+        ArrayList<VignetteSchema> panels = new ArrayList<>();
         panels.add(new VignetteSchema(format, dialogue, this.document, panelElement));
+
+        scenes.add(new Scene(scene, panels));
     }
 
 
 
     public void translateVignettes(String language) throws IOException {
-        ArrayList<String[]> textToTranslate = new ArrayList<>();
+        /*ArrayList<String[]> textToTranslate = new ArrayList<>();
 
         panels.forEach(panel -> textToTranslate.add(panel.getOriginalText()));
         textToTranslate.removeIf(text -> text.length == 0);
@@ -163,10 +173,15 @@ public class VignetteManager {
                 setTranslations[i] = resultsQueue.remove();
             }
             panel.setTranslations(setTranslations);
-        });
+        });*/
     }
 
     public void write(String fileName) {
+        Node scenesElement = document.getElementsByTagName("scenes").item(0);
+        for(Scene scene : scenes) {
+            scenesElement.appendChild(scene.getScene());
+        }
+
         try{
             // Creates the file in the clunkiest way imaginable
             FileWriter writer = new FileWriter(fileName);

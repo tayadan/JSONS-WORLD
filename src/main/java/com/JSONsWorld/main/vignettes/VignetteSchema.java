@@ -12,7 +12,7 @@ import java.util.Queue;
 /**
  * Contains the scene info for 1 vignette
  */
-class VignetteSchema {
+public class VignetteSchema {
     private Node panel;
 
     private ArrayList<TextAndTranslation> extractedText = new ArrayList<>();
@@ -44,8 +44,11 @@ class VignetteSchema {
 
     protected VignetteSchema(String format, String dialogue, Document parent, Element panel) {
         this.panel = panel;
+        dialogue = dialogue.trim();
         boolean hasRight = false;
+        dialogue = dialogue.replaceAll("\\\\", "\"");
         try {
+            // Checks if there is a character on the right side.
             hasRight = !format.split(", ")[1].split(":")[1].trim().isEmpty();
         } catch (IndexOutOfBoundsException e) {}
 
@@ -67,37 +70,46 @@ class VignetteSchema {
         }
 
         if(hasRight) {
-            Node right = parent.createElement("right");
-            Node id = parent.createElement("id");
-            id.appendChild(parent.createTextNode(format.split(", ")[1].split("-")[1].split(":")[1].trim()));
-            right.appendChild(id);
+            try {
+                Node right = parent.createElement("right");
+                Node id = parent.createElement("id");
+                id.appendChild(parent.createTextNode(format.split(", ")[1].split("-")[1].split(":")[1].trim()));
+                right.appendChild(id);
 
-            Node name = parent.createElement("name");
-            name.appendChild(parent.createTextNode(format.split(", ")[1].split("-")[1].split(":")[1].trim()));
-            right.appendChild(name);
+                Node name = parent.createElement("name");
+                name.appendChild(parent.createTextNode(format.split(", ")[1].split("-")[1].split(":")[1].trim()));
+                right.appendChild(name);
 
-            Node pose = parent.createElement("pose");
-            pose.appendChild(parent.createTextNode(format.split(", ")[2].split("-")[1].split(":")[1].trim()));
-            right.appendChild(pose);
+                Node pose = parent.createElement("pose");
+                pose.appendChild(parent.createTextNode(format.split(", ")[2].split("-")[1].split(":")[1].trim()));
+                right.appendChild(pose);
 
-            panel.appendChild(right);
+                panel.appendChild(right);
+            } catch (Exception exception){}
         }
 
-        if(dialogue.trim().contains("|")) {
+        // Handles formatting
+        try {
             Element balloon = parent.createElement("balloon");
             balloon.setAttribute("status", "speech");
 
-            Node text = parent.createElement("text");
-            text.appendChild(parent.createTextNode(dialogue.split("\\|")[0].trim()));
-            balloon.appendChild(text);
+            Node character = parent.createElement("character");
+            character.appendChild(parent.createTextNode(dialogue.split(":")[0]));
+            balloon.appendChild(character);
 
-            Node translation = parent.createElement("translation");
-            translation.appendChild(parent.createTextNode(dialogue.split("\\|")[1].trim()));
-            balloon.appendChild(translation);
+                Node text = parent.createElement("text");
+                text.appendChild(parent.createTextNode(dialogue.split("\\|")[0].split(":")[1].trim()));
+                balloon.appendChild(text);
+
+
+            if(dialogue.trim().contains("|")) {
+                Node translation = parent.createElement("translation");
+                translation.appendChild(parent.createTextNode(dialogue.split("\\|")[1].trim()));
+                balloon.appendChild(translation);
+            }
 
             panel.appendChild(balloon);
-        }
-
+        } catch (Exception exception){}
         Node background = panel.getOwnerDocument().createElement("setting");
         background.appendChild(panel.getOwnerDocument().createTextNode(format.split(", ")[0].split("-")[1].trim()));
         panel.appendChild(background);
